@@ -6,6 +6,7 @@ import { GameEventBus } from "../events/game-event-bus";
 import type { GameSystem } from "../ecs/system";
 import {
   CharacterMotor,
+  ControlLock,
   PlayerInputState,
   Transform,
   Velocity,
@@ -36,6 +37,13 @@ export class PlayerMovementSystem implements GameSystem {
       const inputState = world.getComponent(entityId, PlayerInputState);
       const motor = world.getComponent(entityId, CharacterMotor);
       if (!transform || !velocity || !inputState || !motor) continue;
+
+      if (world.hasComponent(entityId, ControlLock)) {
+        velocity.linear.x = 0;
+        velocity.linear.y = 0;
+        velocity.linear.z = 0;
+        continue;
+      }
 
       const inputX = clampAxis(inputState.current.moveX);
       const inputY = clampAxis(inputState.current.moveY);
