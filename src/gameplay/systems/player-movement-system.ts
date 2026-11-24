@@ -60,10 +60,12 @@ export class PlayerMovementSystem {
         transform.rotationY = Math.atan2(directionX, -directionZ);
       }
 
-      this.events?.emit("player:moved", {
-        entityId,
-        position: copyVec3(transform.position),
-      });
+      if (isMoving) {
+        this.events?.emit("player:moved", {
+          entityId,
+          position: copyVec3(transform.position),
+        });
+      }
     }
   }
 }
