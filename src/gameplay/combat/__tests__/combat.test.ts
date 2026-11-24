@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ControlLock, Transform } from "../../ecs/components";
+import { ControlLock, PlayerInputState, Transform } from "../../ecs/components";
 import { World } from "../../ecs/world";
 import { createPlayer } from "../../player/create-player";
 import { PlayerMovementSystem } from "../../systems/player-movement-system";
@@ -39,7 +39,6 @@ describe("non-lethal combat", () => {
     const combat = new CombatSystem(damage);
     world.getComponent(attackerId, NonLethalWeapon)!.cooldownSeconds = 0;
     world.getComponent(targetId, Health)!.current = 20;
-
     for (let index = 0; index < 4; index += 1) {
       combat.requestAttack(attackerId, targetId);
       combat.update(world, 0.1);
@@ -88,17 +87,10 @@ describe("non-lethal combat", () => {
   it("blocks player movement for the duration of a control lock", () => {
     const world = new World();
     const playerId = createPlayer(world);
-    const input = world.getComponent(playerId, (awaitPlayerInputComponent()))!;
+    const input = world.getComponent(playerId, PlayerInputState)!;
     input.current = { moveX: 0, moveY: 1, sprint: false };
     world.addComponent(playerId, ControlLock, { reason: "stunned", remainingSeconds: 1 });
     new PlayerMovementSystem().update(world, 1 / 60);
     expect(world.getComponent(playerId, Transform)?.position.z).toBe(0);
   });
 });
-
-function awaitPlayerInputComponent() {
-  // Kept as a tiny helper so the test uses the same ECS component as production.
-  return importPlayerInputState;
-}
-
-import { PlayerInputState as importPlayerInputState } from "../../ecs/components";
