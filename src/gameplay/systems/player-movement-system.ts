@@ -3,6 +3,7 @@ import {
 } from "../../shared/constants";
 import type { Vec3 } from "../../shared/types";
 import { GameEventBus } from "../events/game-event-bus";
+import type { GameSystem } from "../ecs/system";
 import {
   CharacterMotor,
   PlayerInputState,
@@ -15,7 +16,7 @@ import { World } from "../ecs/world";
  * Déplacement au sol indépendant de Three.js. L'orientation est exprimée
  * autour de Y ; l'axe avant du personnage est -Z.
  */
-export class PlayerMovementSystem {
+export class PlayerMovementSystem implements GameSystem {
   constructor(private readonly events?: GameEventBus) {}
 
   update(world: World, deltaSeconds: number): void {
@@ -41,9 +42,9 @@ export class PlayerMovementSystem {
       const inputY = clampAxis(inputState.current.moveY);
       const magnitude = Math.hypot(inputX, inputY);
       const scale = magnitude > 1 ? 1 / magnitude : 1;
-      const directionX = inputX * scale;
-      const directionZ = -inputY * scale;
       const isMoving = magnitude > 0.0001;
+      const directionX = isMoving ? inputX * scale : 0;
+      const directionZ = isMoving ? -inputY * scale : 0;
 
       const speed =
         motor.walkSpeed *
