@@ -83,7 +83,7 @@ export class NavGraph {
       for (const edge of this.adjacency.get(current) ?? []) {
         if (closed.has(edge.id)) continue;
         const node = this.nodes.get(edge.id)!;
-        const tentative = (gScore.get(current) ?? Infinity) + edge.cost * Math.max(0.1, node.traversalCost ?? 1);
+        const tentative = (gScore.get(current) ?? Infinity) + edge.cost * Math.max(1, node.traversalCost ?? 1);
         if (tentative >= (gScore.get(edge.id) ?? Infinity)) continue;
         cameFrom.set(edge.id, current);
         gScore.set(edge.id, tentative);
