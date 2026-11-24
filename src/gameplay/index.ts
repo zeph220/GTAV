@@ -7,3 +7,7 @@ export * from "./inventory/inventory";
 export * from "./player/create-player";
 export * from "./systems/player-movement-system";
 export * from "./systems/third-person-camera-system";
+export * from "./combat/combat-components";
+export * from "./combat/combat-system";
+export * from "./combat/damage-system";
+export * from "./combat/equipment";
