@@ -1,6 +1,7 @@
 export * from "./ecs/component";
 export * from "./ecs/components";
 export * from "./ecs/world";
+export * from "./ecs/system";
 export * from "./events/game-event-bus";
 export * from "./inventory/inventory";
 export * from "./player/create-player";
