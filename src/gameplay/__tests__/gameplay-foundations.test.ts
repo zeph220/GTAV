@@ -45,7 +45,7 @@ describe("Project Phoenix gameplay foundations", () => {
 
   it("does not emit movement events while the player is idle", () => {
     const world = new World();
-    const playerId = createPlayer(world);
+    createPlayer(world);
     const onMoved = vi.fn();
     const events = new GameEventBus();
     events.on("player:moved", onMoved);
