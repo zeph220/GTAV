@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { Transform } from "../../ecs/components";
+import { ControlLock, Transform } from "../../ecs/components";
 import { World } from "../../ecs/world";
+import { createPlayer } from "../../player/create-player";
+import { PlayerMovementSystem } from "../../systems/player-movement-system";
 import { CombatSystem } from "../combat-system";
 import { DamageSystem } from "../damage-system";
 import { equipStunProjector, initializeHealth } from "../equipment";
@@ -28,6 +30,7 @@ describe("non-lethal combat", () => {
     damage.update(world, 1 / 60);
     expect(world.getComponent(targetId, Health)?.current).toBe(70);
     expect(world.getComponent(targetId, Stunned)?.remainingSeconds).toBe(2.5);
+    expect(world.getComponent(targetId, ControlLock)?.reason).toBe("stunned");
   });
 
   it("never reduces health below one, even after repeated hits", () => {
@@ -81,4 +84,21 @@ describe("non-lethal combat", () => {
     combat.update(world, 0.1);
     expect(reports).toEqual([attackerId]);
   });
+
+  it("blocks player movement for the duration of a control lock", () => {
+    const world = new World();
+    const playerId = createPlayer(world);
+    const input = world.getComponent(playerId, (awaitPlayerInputComponent()))!;
+    input.current = { moveX: 0, moveY: 1, sprint: false };
+    world.addComponent(playerId, ControlLock, { reason: "stunned", remainingSeconds: 1 });
+    new PlayerMovementSystem().update(world, 1 / 60);
+    expect(world.getComponent(playerId, Transform)?.position.z).toBe(0);
+  });
 });
+
+function awaitPlayerInputComponent() {
+  // Kept as a tiny helper so the test uses the same ECS component as production.
+  return importPlayerInputState;
+}
+
+import { PlayerInputState as importPlayerInputState } from "../../ecs/components";
