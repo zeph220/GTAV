@@ -6,6 +6,7 @@ import { findWorldPath } from "../navigation/pathfinding";
 import { createCivilian } from "../civilian/create-civilian";
 import { Civilian } from "../civilian/civilian-components";
 import { PedestrianSystem } from "../systems/pedestrian-system";
+import { CivilianScheduleSystem } from "../systems/civilian-schedule-system";
 import { CivilianSpawner } from "../spawning/civilian-spawner";
 
 function makeLineGraph(): NavGraph {
@@ -50,6 +51,36 @@ describe("NOVA CITY pedestrian AI", () => {
     civilian.state = "walking";
     new PedestrianSystem(graph).update(world, 0.5);
     expect(world.getComponent(id, Transform)?.position.x).toBeCloseTo(1);
+  });
+
+  it("makes civilians flee from a nearby threat", () => {
+    const graph = makeLineGraph();
+    const world = new World();
+    const id = createCivilian(world, { x: 0, y: 0, z: 0 }, { random: () => 0 });
+    const system = new PedestrianSystem(graph, {
+      random: () => 0.5,
+      threats: () => [{ position: { x: 1, y: 0, z: 0 }, radius: 8 }],
+    });
+    system.update(world, 1 / 60);
+    expect(world.getComponent(id, Civilian)?.state).toBe("fleeing");
+  });
+
+  it("assigns commuter routes only once per schedule phase", () => {
+    const graph = makeLineGraph();
+    const world = new World();
+    const id = createCivilian(world, { x: 0, y: 0, z: 0 }, {
+      archetype: "commuter",
+      homeNodeId: "a",
+      workNodeId: "c",
+      random: () => 0,
+    });
+    const schedules = new CivilianScheduleSystem(graph);
+    schedules.update(world, 8);
+    const civilian = world.getComponent(id, Civilian)!;
+    expect(civilian.schedulePhase).toBe("commuting-to-work");
+    expect(civilian.path).toHaveLength(2);
+    schedules.update(world, 8.1);
+    expect(civilian.path).toHaveLength(2);
   });
 
   it("uses deterministic weighted spawn points", () => {
