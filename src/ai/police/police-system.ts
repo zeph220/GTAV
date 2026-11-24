@@ -1,6 +1,6 @@
 import type { EntityId, Vec3 } from "../../shared/types";
 import { MAX_SIMULATION_DELTA_SECONDS } from "../../shared/constants";
-import { Transform } from "../../gameplay/ecs/components";
+import { ControlLock, Transform } from "../../gameplay/ecs/components";
 import type { GameSystem } from "../../gameplay/ecs/system";
 import type { World } from "../../gameplay/ecs/world";
 import { NavGraph } from "../navigation/nav-graph";
@@ -143,6 +143,10 @@ export class PoliceSystem implements GameSystem {
         wanted.detained = true;
         wanted.heat = 0;
         wanted.level = 0;
+        world.addComponent(officer.targetEntityId, ControlLock, {
+          reason: "detained",
+          remainingSeconds: null,
+        });
         for (const id of world.query(PoliceOfficer)) {
           if (world.getComponent(id, PoliceOfficer)?.targetEntityId === officer.targetEntityId) {
             world.destroyEntity(id);
