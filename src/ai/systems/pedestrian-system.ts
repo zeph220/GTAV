@@ -132,12 +132,14 @@ export class PedestrianSystem implements GameSystem {
   }
 
   private arrive(civilian: import("../civilian/civilian-components").CivilianComponent): void {
+    const wasFleeing = civilian.state === "fleeing";
     civilian.destination = null;
     civilian.path = [];
     civilian.waypointIndex = 0;
     civilian.state = "waiting";
-    civilian.waitRemaining = civilian.state === "fleeing" ? 0.2 : 1 + this.random() * 4;
+    civilian.waitRemaining = wasFleeing ? 0.2 : 1 + this.random() * 4;
     civilian.decisionTimer = this.decisionInterval;
-    civilian.schedulePhase = "off-duty";
+    if (civilian.schedulePhase === "commuting-to-work") civilian.schedulePhase = "at-work";
+    else if (civilian.schedulePhase === "commuting-home") civilian.schedulePhase = "off-duty";
   }
 }
