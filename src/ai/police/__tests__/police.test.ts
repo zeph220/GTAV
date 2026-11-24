@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Transform } from "../../../gameplay/ecs/components";
+import { ControlLock, Transform } from "../../../gameplay/ecs/components";
 import { World } from "../../../gameplay/ecs/world";
 import { NavGraph } from "../../navigation/nav-graph";
 import { PoliceOfficer, WantedStatus } from "../police-components";
@@ -27,11 +27,7 @@ describe("NOVA CITY police response", () => {
       spawnPoints: [{ x: 12, y: 0, z: 0 }],
       pursuitRadius: 20,
     });
-    police.reportIncident(world, {
-      suspectId,
-      position: { x: 0, y: 0, z: 0 },
-      severity: "assault",
-    });
+    police.reportIncident(world, { suspectId, position: { x: 0, y: 0, z: 0 }, severity: "assault" });
     expect(world.getComponent(suspectId, WantedStatus)?.level).toBe(1);
     police.update(world, 0.1);
     expect(world.query(PoliceOfficer, Transform)).toHaveLength(1);
@@ -56,14 +52,11 @@ describe("NOVA CITY police response", () => {
       spawnPoints: [{ x: 0, y: 0, z: 0 }],
       arrestDurationSeconds: 0.3,
     });
-    police.reportIncident(world, {
-      suspectId,
-      position: { x: 0, y: 0, z: 0 },
-      severity: "assault",
-    });
+    police.reportIncident(world, { suspectId, position: { x: 0, y: 0, z: 0 }, severity: "assault" });
     for (let index = 0; index < 4; index += 1) police.update(world, 0.1);
     expect(world.getComponent(suspectId, WantedStatus)?.detained).toBe(true);
     expect(world.getComponent(suspectId, WantedStatus)?.level).toBe(0);
+    expect(world.getComponent(suspectId, ControlLock)?.reason).toBe("detained");
     expect(world.query(PoliceOfficer)).toHaveLength(0);
   });
 });
