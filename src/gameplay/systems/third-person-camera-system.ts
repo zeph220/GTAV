@@ -1,6 +1,7 @@
 import {
   MAX_SIMULATION_DELTA_SECONDS,
 } from "../../shared/constants";
+import type { GameSystem } from "../ecs/system";
 import {
   CameraFollow,
   CameraRig,
@@ -12,7 +13,7 @@ import { World } from "../ecs/world";
  * Calcule la pose d'une caméra orbitale à la troisième personne.
  * Le rendu (Three.js / R3F) n'a qu'à recopier position et target dans sa caméra.
  */
-export class ThirdPersonCameraSystem {
+export class ThirdPersonCameraSystem implements GameSystem {
   update(world: World, deltaSeconds: number): void {
     const delta = Math.max(
       0,
