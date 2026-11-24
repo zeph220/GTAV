@@ -1,0 +1,65 @@
+import { describe, expect, it } from "vitest";
+import { World } from "../../gameplay/ecs/world";
+import { Transform } from "../../gameplay/ecs/components";
+import { NavGraph } from "../navigation/nav-graph";
+import { findWorldPath } from "../navigation/pathfinding";
+import { createCivilian } from "../civilian/create-civilian";
+import { Civilian } from "../civilian/civilian-components";
+import { PedestrianSystem } from "../systems/pedestrian-system";
+import { CivilianSpawner } from "../spawning/civilian-spawner";
+
+function makeLineGraph(): NavGraph {
+  const graph = new NavGraph();
+  graph.addNode({ id: "a", position: { x: 0, y: 0, z: 0 } });
+  graph.addNode({ id: "b", position: { x: 5, y: 0, z: 0 } });
+  graph.addNode({ id: "c", position: { x: 10, y: 0, z: 0 } });
+  graph.addEdge({ from: "a", to: "b" });
+  graph.addEdge({ from: "b", to: "c" });
+  return graph;
+}
+
+describe("NOVA CITY pedestrian AI", () => {
+  it("finds a shortest path over connected sidewalk nodes", () => {
+    const graph = makeLineGraph();
+    expect(graph.findPath("a", "c")).toEqual([
+      { x: 5, y: 0, z: 0 },
+      { x: 10, y: 0, z: 0 },
+    ]);
+    expect(graph.findPath("a", "missing")).toBeNull();
+  });
+
+  it("projects arbitrary positions and preserves the exact destination", () => {
+    const path = findWorldPath(makeLineGraph(), { x: 0, y: 0, z: 0 }, { x: 9, y: 0, z: 2 });
+    expect(path?.[path.length - 1]).toEqual({ x: 9, y: 0, z: 2 });
+  });
+
+  it("creates a civilian with archetype traits and ECS components", () => {
+    const world = new World();
+    const id = createCivilian(world, { x: 1, y: 0, z: 2 }, { archetype: "commuter", random: () => 0.5 });
+    expect(world.getComponent(id, Transform)?.position).toEqual({ x: 1, y: 0, z: 2 });
+    expect(world.getComponent(id, Civilian)?.walkSpeed).toBeGreaterThan(1);
+  });
+
+  it("moves civilians along a route without exceeding the speed budget", () => {
+    const graph = makeLineGraph();
+    const world = new World();
+    const id = createCivilian(world, { x: 0, y: 0, z: 0 }, { walkSpeed: 2, random: () => 0 });
+    const civilian = world.getComponent(id, Civilian)!;
+    civilian.path = [{ x: 5, y: 0, z: 0 }];
+    civilian.destination = { x: 5, y: 0, z: 0 };
+    civilian.state = "walking";
+    new PedestrianSystem(graph).update(world, 0.5);
+    expect(world.getComponent(id, Transform)?.position.x).toBeCloseTo(1);
+  });
+
+  it("uses deterministic weighted spawn points", () => {
+    const world = new World();
+    const spawner = new CivilianSpawner(() => 0.99);
+    const ids = spawner.spawn(world, [
+      { position: { x: 0, y: 0, z: 0 }, weight: 1 },
+      { position: { x: 20, y: 0, z: 0 }, weight: 3 },
+    ], 4);
+    expect(ids).toHaveLength(4);
+    expect(world.getComponent(ids[0]!, Transform)?.position.x).toBe(20);
+  });
+});
