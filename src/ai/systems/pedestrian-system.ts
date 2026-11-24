@@ -1,7 +1,7 @@
 import type { Vec3 } from "../../shared/types";
 import { MAX_SIMULATION_DELTA_SECONDS } from "../../shared/constants";
 import type { GameSystem } from "../../gameplay/ecs/system";
-import { Transform } from "../../gameplay/ecs/components";
+import { ControlLock, Transform } from "../../gameplay/ecs/components";
 import { World } from "../../gameplay/ecs/world";
 import { Civilian } from "../civilian/civilian-components";
 import { NavGraph } from "../navigation/nav-graph";
@@ -47,7 +47,7 @@ export class PedestrianSystem implements GameSystem {
     for (const id of world.query(Transform, Civilian)) {
       const transform = world.getComponent(id, Transform);
       const civilian = world.getComponent(id, Civilian);
-      if (!transform || !civilian) continue;
+      if (!transform || !civilian || world.hasComponent(id, ControlLock)) continue;
 
       const position = transform.position;
       const threat = this.findThreat(position, threats, civilian.alertness);
