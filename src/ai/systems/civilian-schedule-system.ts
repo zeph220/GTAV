@@ -19,7 +19,9 @@ export class CivilianScheduleSystem {
       if (civilian.archetype !== "commuter" && civilian.archetype !== "worker") continue;
       const targetId = goingToWork ? civilian.workNodeId : civilian.homeNodeId;
       const phase = goingToWork ? "commuting-to-work" : "commuting-home";
-      if (!targetId || civilian.schedulePhase === phase) continue;
+      if (!targetId) continue;
+      if (goingToWork && (civilian.schedulePhase === "commuting-to-work" || civilian.schedulePhase === "at-work")) continue;
+      if (!goingToWork && (civilian.schedulePhase === "commuting-home" || civilian.schedulePhase === "off-duty")) continue;
       const target = this.navigation.getNode(targetId);
       const start = this.navigation.nearestNode(transform.position);
       if (!target || !start) continue;
