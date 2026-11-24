@@ -5,3 +5,6 @@ export * from "./navigation/pathfinding";
 export * from "./systems/pedestrian-system";
 export * from "./systems/civilian-schedule-system";
 export * from "./spawning/civilian-spawner";
+export * from "./police/police-components";
+export * from "./police/create-police-officer";
+export * from "./police/police-system";
