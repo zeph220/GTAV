@@ -1,6 +1,7 @@
 import type { EntityId } from "../../shared/types";
 import { MAX_SIMULATION_DELTA_SECONDS } from "../../shared/constants";
 import type { GameSystem } from "../ecs/system";
+import { ControlLock } from "../ecs/components";
 import { Health, Stunned } from "./combat-components";
 import type { World } from "../ecs/world";
 
@@ -48,6 +49,12 @@ export class DamageSystem implements GameSystem {
       stunned.remainingSeconds = Math.max(0, stunned.remainingSeconds - dt);
       if (stunned.remainingSeconds === 0) world.removeComponent(entityId, Stunned);
     }
+    for (const entityId of world.query(ControlLock)) {
+      const lock = world.getComponent(entityId, ControlLock);
+      if (!lock || lock.remainingSeconds === null) continue;
+      lock.remainingSeconds = Math.max(0, lock.remainingSeconds - dt);
+      if (lock.remainingSeconds === 0) world.removeComponent(entityId, ControlLock);
+    }
 
     const requests = this.pending.splice(0);
     for (const request of requests) {
@@ -64,9 +71,18 @@ export class DamageSystem implements GameSystem {
 
       const stunDuration = request.stunDurationSeconds ?? 0;
       if (stunDuration > 0) {
-        const existing = world.getComponent(request.targetId, Stunned);
-        if (existing) existing.remainingSeconds = Math.max(existing.remainingSeconds, stunDuration);
+        const existingStun = world.getComponent(request.targetId, Stunned);
+        if (existingStun) existingStun.remainingSeconds = Math.max(existingStun.remainingSeconds, stunDuration);
         else world.addComponent(request.targetId, Stunned, { remainingSeconds: stunDuration });
+
+        const lock = world.getComponent(request.targetId, ControlLock);
+        if (!lock || lock.reason !== "detained") {
+          const remaining = lock?.remainingSeconds ?? 0;
+          world.addComponent(request.targetId, ControlLock, {
+            reason: "stunned",
+            remainingSeconds: Math.max(remaining, stunDuration),
+          });
+        }
       }
 
       this.options.onDamage?.({
