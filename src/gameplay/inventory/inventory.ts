@@ -22,7 +22,9 @@ export function addItem(
     return 0;
   }
 
-  const stackLimit = Math.max(1, Math.floor(maxStack));
+  const stackLimit = Number.isFinite(maxStack)
+    ? Math.max(1, Math.floor(maxStack))
+    : DEFAULT_ITEM_MAX_STACK;
   let remaining = Math.floor(quantity);
   const initial = remaining;
 
