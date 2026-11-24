@@ -34,6 +34,12 @@ export interface InventoryComponent {
   slots: ItemStack[];
 }
 
+export interface ControlLockComponent {
+  reason: "stunned" | "detained";
+  /** Null means the lock is permanent until another system releases it. */
+  remainingSeconds: number | null;
+}
+
 export const Transform = defineComponent<TransformComponent>("Transform");
 export const Velocity = defineComponent<VelocityComponent>("Velocity");
 export const PlayerInputState = defineComponent<PlayerInputComponent>("PlayerInput");
@@ -41,3 +47,4 @@ export const CharacterMotor = defineComponent<CharacterMotorComponent>("Characte
 export const CameraFollow = defineComponent<CameraFollowComponent>("CameraFollow");
 export const CameraRig = defineComponent<CameraRigComponent>("CameraRig");
 export const Inventory = defineComponent<InventoryComponent>("Inventory");
+export const ControlLock = defineComponent<ControlLockComponent>("ControlLock");
