@@ -15,10 +15,9 @@ import { World } from "../ecs/world";
  */
 export class ThirdPersonCameraSystem implements GameSystem {
   update(world: World, deltaSeconds: number): void {
-    const delta = Math.max(
-      0,
-      Math.min(deltaSeconds, MAX_SIMULATION_DELTA_SECONDS),
-    );
+    const delta = Number.isFinite(deltaSeconds)
+      ? Math.max(0, Math.min(deltaSeconds, MAX_SIMULATION_DELTA_SECONDS))
+      : 0;
     if (delta === 0) return;
 
     for (const entityId of world.query(Transform, CameraFollow, CameraRig)) {
