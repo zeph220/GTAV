@@ -27,7 +27,7 @@ export interface CameraFollowComponent {
   followSpeed: number;
 }
 
-export interface CameraRigComponent extends CameraPose {}
+export type CameraRigComponent = CameraPose;
 
 export interface InventoryComponent {
   capacity: number;
