@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Health } from "../../combat/combat-components";
 import { Inventory, Transform } from "../../ecs/components";
+import { MissionJournal } from "../../../missions/mission-components";
 import { World } from "../../ecs/world";
 import { Progression, Reputation } from "../../progression/progression-components";
 import { InMemorySaveStorage } from "../save-storage";
@@ -19,6 +20,13 @@ describe("save manager", () => {
     sourceWorld.addComponent(sourcePlayer, Progression, {
       experience: 250, level: 2, unspentSkillPoints: 1, unlockedPerks: ["steady-hands"],
     });
+    sourceWorld.addComponent(sourcePlayer, MissionJournal, {
+      activeMissionIds: ["neighbourhood-helper"], completedMissionIds: ["first-day-nova-city"],
+      failedMissionIds: [], missions: {
+        "neighbourhood-helper": { missionId: "neighbourhood-helper", status: "active", elapsedSeconds: 12,
+          objectives: [{ objectiveId: "parts", currentCount: 2, requiredCount: 3, completed: false }] },
+      },
+    });
     await saves.save(sourceWorld, sourcePlayer, "slot-1");
 
     const targetWorld = new World();
@@ -31,6 +39,7 @@ describe("save manager", () => {
     expect(targetWorld.getComponent(targetPlayer, Inventory)?.slots).toEqual([{ itemId: "spare-part", quantity: 3 }]);
     expect(targetWorld.getComponent(targetPlayer, Reputation)?.factions.civic).toBe(45);
     expect(targetWorld.getComponent(targetPlayer, Progression)?.unlockedPerks).toEqual(["steady-hands"]);
+    expect(targetWorld.getComponent(targetPlayer, MissionJournal)?.missions["neighbourhood-helper"]?.objectives[0]?.currentCount).toBe(2);
   });
 
   it("rejects malformed save data before applying it", async () => {
