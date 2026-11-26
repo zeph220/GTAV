@@ -100,6 +100,18 @@ describe("dynamic event director", () => {
     expect(onExpired).toHaveBeenCalledTimes(1);
   });
 
+  it("does not start a second instance of a definition that is already active", () => {
+    const director = new DynamicEventDirector({ spawnIntervalSeconds: 5000 });
+    director.registerDefinition({ ...definition, cooldownSeconds: 0 });
+    registerTestLocation(director);
+    registerTestLocation(director, "second-plaza");
+    const world = new World();
+
+    expect(director.startEvent(world, definition.id, "plaza")).not.toBeNull();
+    expect(director.startEvent(world, definition.id, "second-plaza")).toBeNull();
+    expect(director.getActiveEvents(world)).toHaveLength(1);
+  });
+
   it("uses the injected random source for deterministic automatic scheduling", () => {
     const onStarted = vi.fn();
     const director = new DynamicEventDirector({
