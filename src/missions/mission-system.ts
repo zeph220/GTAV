@@ -76,7 +76,12 @@ export class MissionSystem implements GameSystem {
   reportEvent(world: World, playerId: EntityId, event: MissionEvent): number {
     const journal = world.getComponent(playerId, MissionJournal);
     if (!journal) return 0;
-    const amount = Math.max(1, Math.floor(Number.isFinite(event.amount) ? event.amount ?? 1 : 1));
+    const amount = event.amount === undefined
+      ? 1
+      : Number.isFinite(event.amount)
+        ? Math.max(0, Math.floor(event.amount))
+        : 0;
+    if (amount === 0) return 0;
     let changed = 0;
 
     for (const missionId of [...journal.activeMissionIds]) {
