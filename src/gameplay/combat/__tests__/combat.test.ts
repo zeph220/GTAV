@@ -23,11 +23,13 @@ function makeCombatants(distance = 4) {
 describe("non-lethal combat", () => {
   it("applies damage and an incapacitating status to a valid target", () => {
     const { world, attackerId, targetId } = makeCombatants();
-    const damage = new DamageSystem();
+    const applied: Array<{ appliedDamage: number; remainingHealth: number }> = [];
+    const damage = new DamageSystem({ onDamage: (result) => applied.push(result) });
     const combat = new CombatSystem(damage);
     combat.requestAttack(attackerId, targetId);
     combat.update(world, 1 / 60);
     damage.update(world, 1 / 60);
+    expect(applied).toEqual([{ appliedDamage: 30, remainingHealth: 70 }]);
     expect(world.getComponent(targetId, Health)?.current).toBe(70);
     expect(world.getComponent(targetId, Stunned)?.remainingSeconds).toBe(2.5);
     expect(world.getComponent(targetId, ControlLock)?.reason).toBe("stunned");
