@@ -76,11 +76,14 @@ describe("non-lethal combat", () => {
   it("emits an assault report only for a successful hit", () => {
     const { world, attackerId, targetId } = makeCombatants();
     const reports: number[] = [];
+    const results: Array<{ success: boolean; reason?: string }> = [];
     const combat = new CombatSystem(new DamageSystem(), {
       onAssault: (event) => reports.push(event.attackerId),
+      onAttackResolved: (result) => results.push(result),
     });
     combat.requestAttack(attackerId, targetId);
     combat.update(world, 0.1);
+    expect(results).toEqual([{ attackerId, targetId, success: true }]);
     expect(reports).toEqual([attackerId]);
   });
 
