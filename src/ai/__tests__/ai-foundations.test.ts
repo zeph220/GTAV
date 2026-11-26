@@ -49,8 +49,8 @@ describe("NOVA CITY pedestrian AI", () => {
     civilian.path = [{ x: 5, y: 0, z: 0 }];
     civilian.destination = { x: 5, y: 0, z: 0 };
     civilian.state = "walking";
-    new PedestrianSystem(graph).update(world, 0.5);
-    expect(world.getComponent(id, Transform)?.position.x).toBeCloseTo(1);
+    new PedestrianSystem(graph).update(world, 0.1);
+    expect(world.getComponent(id, Transform)?.position.x).toBeCloseTo(0.2);
   });
 
   it("makes civilians flee from a nearby threat", () => {
