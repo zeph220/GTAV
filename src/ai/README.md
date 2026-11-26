@@ -63,7 +63,7 @@ Les membres restent des entités ECS. `spawnMember` crée une entité avec
 le composant à une entité existante. Après `trackPlayer(playerId)`, le système
 signale l'entrée/sortie de territoire et expose les réactions de proximité.
 Les attitudes s'appuient sur `ReputationSystem` : un score inférieur ou égal à
--25 alerte les membres proches ; à -50 ou moins, les membres avec une agressivité
+-25 alerte les membres proches ; à -75 ou moins, les membres avec une agressivité
 suffisante passent à l'état `confronting`. Ces états sont des signaux non létaux ;
 aucun mouvement, dégât ou rendu n'est déclenché directement.
 
