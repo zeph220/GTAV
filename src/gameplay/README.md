@@ -20,7 +20,7 @@ Ce dossier appartient à ChatGPT conformément à `plandebuild.md`.
 - `ProgressionSystem` accumule l'expérience, calcule les niveaux, attribue des points de compétence et contrôle le déblocage des aptitudes.
 - `SaveManager` sérialise les composants joueur pris en charge dans des emplacements versionnés. Il inclut transform, santé, inventaire, réputation, progression et journal de missions.
 - `SaveStorage` est une interface asynchrone ; `InMemorySaveStorage` sert aux tests et `WebStorageSaveStorage` peut recevoir `window.localStorage` ou un stockage compatible.
-- Les adaptateurs de sauvegarde sont extensibles sans modifier l'ECS. Les sections inconnues sont ignorées ; une version de format inconnue est refusée.
+- Les adaptateurs de sauvegarde sont extensibles sans modifier l'ECS. Les sections inconnues sont ignorées ; une version de format inconnue est refusée. La décision d'architecture est détaillée dans `docs/adr/0001-progression-and-save-system.md`.
 
 Exemple d'initialisation :
 
