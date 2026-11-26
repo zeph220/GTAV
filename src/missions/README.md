@@ -5,17 +5,16 @@ Cette arborescence suit le périmètre ChatGPT du plan de build : missions, obje
 ## Mise en place
 
 ```ts
-import {
-  DialogueSystem,
-  MissionSystem,
-  NOVA_CITY_STARTER_DIALOGUES,
-  NOVA_CITY_STARTER_MISSIONS,
-} from "./missions";
+const progression = new ProgressionSystem();
+progression.initialize(world, playerId);
 
 const missions = new MissionSystem(NOVA_CITY_STARTER_MISSIONS, {
   onCompleted: (update, definition) => {
-    // Le système de progression/économie de l'itération 5 distribuera les récompenses.
-    console.info("Mission terminée", definition.id, update.playerId);
+    progression.awardExperience(
+      world,
+      update.playerId,
+      definition.reward?.experience ?? 0,
+    );
   },
 });
 missions.initializeJournal(world, playerId);
@@ -44,9 +43,9 @@ Les objectifs à quantité (par exemple trois pièces) acceptent `amount`. Les �
 
 `DialogueSystem.start` ouvre un dialogue pour un joueur. `choose` valide un choix du nœud courant, déclenche éventuellement un événement de mission, puis passe au nœud suivant. Un dialogue sans destination termine la conversation. Les définitions sont validées à l'enregistrement.
 
-## Temps et abandon
+## Temps, abandon et récompenses
 
-Les missions peuvent définir `timeLimitSeconds`. Ajoutez `MissionSystem.update` à la boucle ECS pour faire avancer les délais. `abandonMission` permet aussi un abandon manuel. Les récompenses restent des métadonnées jusqu'à l'itération 5 ; aucun portefeuille ou système d'expérience n'est inventé ici.
+Les missions peuvent définir `timeLimitSeconds`. Ajoutez `MissionSystem.update` à la boucle ECS pour faire avancer les délais. `abandonMission` permet aussi un abandon manuel. Les récompenses d'expérience sont distribuées depuis `onCompleted` via `ProgressionSystem.awardExperience`. Les récompenses monétaires et les objets restent des métadonnées tant que les systèmes correspondants ne sont pas raccordés.
 
 ## Intégration du monde
 
