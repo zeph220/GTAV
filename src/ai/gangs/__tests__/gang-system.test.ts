@@ -73,7 +73,7 @@ describe("NOVA CITY gang system", () => {
       position: { x: 4, y: 0, z: 2 }, rotationY: 0,
     });
     reputation.initialize(world, playerId);
-    reputation.adjust(world, playerId, "northbank-circle", -65, "previous dispute");
+    reputation.adjust(world, playerId, "northbank-circle", -80, "previous dispute");
 
     const memberId = system.spawnMember(
       world,
