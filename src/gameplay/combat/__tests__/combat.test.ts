@@ -54,7 +54,6 @@ describe("non-lethal combat", () => {
 
   it("never reduces health below one, even after repeated hits", () => {
     const { world, attackerId, targetId } = makeCombatants();
-    const damage = new DamageSystem();
     const resolutions: Array<{ success: boolean; reason?: string }> = [];
     const damageResults: Array<{ appliedDamage: number; remainingHealth: number }> = [];
     const damage = new DamageSystem({ onDamage: (result) => damageResults.push(result) });
