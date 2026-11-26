@@ -92,6 +92,7 @@ export class DynamicEventDirector implements GameSystem {
     if (!definition || !location || !this.isLocationEligible(definition, location)) return null;
     if (this.activeCount(world) >= this.maxActiveEvents) return null;
     if ((this.cooldownUntil.get(definitionId) ?? 0) > this.gameTimeSeconds) return null;
+    if (this.hasActiveDefinition(world, definitionId)) return null;
     if (this.isLocationOccupied(world, locationId)) return null;
 
     const entityId = world.createEntity();
@@ -210,6 +211,7 @@ export class DynamicEventDirector implements GameSystem {
     if (this.activeCount(world) >= this.maxActiveEvents) return;
     const candidates = [...this.definitions.values()].filter((definition) => {
       if ((this.cooldownUntil.get(definition.id) ?? 0) > this.gameTimeSeconds) return false;
+      if (this.hasActiveDefinition(world, definition.id)) return false;
       return [...this.locations.values()].some((location) =>
         this.isLocationEligible(definition, location) && !this.isLocationOccupied(world, location.id),
       );
@@ -244,6 +246,13 @@ export class DynamicEventDirector implements GameSystem {
     return world.query(DynamicEvent).filter((entityId) =>
       world.getComponent(entityId, DynamicEvent)?.state === "active",
     ).length;
+  }
+
+  private hasActiveDefinition(world: World, definitionId: string): boolean {
+    return world.query(DynamicEvent).some((entityId) => {
+      const event = world.getComponent(entityId, DynamicEvent);
+      return event?.state === "active" && event.definitionId === definitionId;
+    });
   }
 
   private rememberTerminal(world: World, entityId: EntityId): void {
