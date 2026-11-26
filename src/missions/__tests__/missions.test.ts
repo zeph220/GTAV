@@ -42,6 +42,7 @@ describe("mission progression", () => {
     expect(missions.startMission(world, playerId, "follow-up")).toBe(false);
     expect(missions.startMission(world, playerId, "intro")).toBe(true);
     expect(missions.reportEvent(world, playerId, { type: "talk-to", targetId: "guide" })).toBe(0);
+    expect(missions.reportEvent(world, playerId, { type: "reach-location", targetId: "plaza", amount: 0 })).toBe(0);
     missions.reportEvent(world, playerId, { type: "reach-location", targetId: "plaza" });
     missions.reportEvent(world, playerId, { type: "talk-to", targetId: "guide" });
     missions.reportEvent(world, playerId, { type: "collect-item", targetId: "part", amount: 2 });
