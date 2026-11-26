@@ -2,19 +2,19 @@ import { describe, expect, it, vi } from "vitest";
 import { Transform } from "../../../gameplay/ecs/components";
 import { World } from "../../../gameplay/ecs/world";
 import { ReputationSystem } from "../../../gameplay/progression/reputation-system";
-import { NOVA_CITY_GANGS } from "../gang-catalog";
+import { createNovaCityGangSystem, NOVA_CITY_GANG_RELATIONSHIPS, NOVA_CITY_GANGS } from "../gang-catalog";
 import { GangMember } from "../gang-components";
 import { GangSystem } from "../gang-system";
 
 describe("NOVA CITY gang system", () => {
   it("registers the original factions and symmetric relationships", () => {
-    const system = new GangSystem();
-    for (const gang of NOVA_CITY_GANGS) system.registerGang(gang);
-    system.setRelationship("northbank-circle", "harbor-line", "hostile");
+    const system = createNovaCityGangSystem();
 
     expect(system.listGangs()).toHaveLength(3);
-    expect(system.getRelationship("northbank-circle", "harbor-line")).toBe("hostile");
-    expect(system.getRelationship("harbor-line", "northbank-circle")).toBe("hostile");
+    expect(NOVA_CITY_GANG_RELATIONSHIPS).toHaveLength(3);
+    expect(system.getRelationship("northbank-circle", "harbor-line")).toBe("unfriendly");
+    expect(system.getRelationship("harbor-line", "northbank-circle")).toBe("unfriendly");
+    expect(system.getRelationship("harbor-line", "orchard-crew")).toBe("hostile");
     expect(system.getRelationship("northbank-circle", "northbank-circle")).toBe("allied");
   });
 
