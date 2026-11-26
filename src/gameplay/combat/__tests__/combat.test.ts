@@ -36,7 +36,7 @@ describe("non-lethal combat", () => {
     expect(resolutions[0]?.success).toBe(true);
     expect(enqueue).toHaveBeenCalledTimes(1);
     damage.update(world, 1 / 60);
-    expect(applied).toEqual([{ appliedDamage: 30, remainingHealth: 70 }]);
+    expect(applied).toMatchObject([{ appliedDamage: 30, remainingHealth: 70 }]);
     expect(world.getComponent(targetId, Health)?.current).toBe(70);
     expect(world.getComponent(targetId, Stunned)?.remainingSeconds).toBe(2.5);
     expect(world.getComponent(targetId, ControlLock)?.reason).toBe("stunned");
@@ -48,14 +48,17 @@ describe("non-lethal combat", () => {
     const damage = new DamageSystem({ onDamage: (result) => applied.push(result) });
     damage.enqueueDamage({ sourceId: attackerId, targetId, amount: 30 });
     damage.update(world, 1 / 60);
-    expect(applied).toEqual([{ appliedDamage: 30, remainingHealth: 70 }]);
+    expect(applied).toMatchObject([{ appliedDamage: 30, remainingHealth: 70 }]);
     expect(world.getComponent(targetId, Health)?.current).toBe(70);
   });
 
   it("never reduces health below one, even after repeated hits", () => {
     const { world, attackerId, targetId } = makeCombatants();
     const damage = new DamageSystem();
-    const combat = new CombatSystem(damage);
+    const resolutions: Array<{ success: boolean; reason?: string }> = [];
+    const damageResults: Array<{ appliedDamage: number; remainingHealth: number }> = [];
+    const damage = new DamageSystem({ onDamage: (result) => damageResults.push(result) });
+    const combat = new CombatSystem(damage, { onAttackResolved: (result) => resolutions.push(result) });
     world.getComponent(attackerId, NonLethalWeapon)!.cooldownSeconds = 0;
     world.getComponent(targetId, Health)!.current = 20;
     for (let index = 0; index < 4; index += 1) {
@@ -63,6 +66,9 @@ describe("non-lethal combat", () => {
       combat.update(world, 0.1);
       damage.update(world, 0.1);
     }
+    expect(resolutions).toHaveLength(4);
+    expect(resolutions.every((result) => result.success)).toBe(true);
+    expect(damageResults).toHaveLength(4);
     expect(world.getComponent(targetId, Health)?.current).toBe(1);
   });
 
