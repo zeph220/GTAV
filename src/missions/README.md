@@ -5,6 +5,8 @@ Cette arborescence suit le périmètre ChatGPT du plan de build : missions, obje
 ## Mise en place
 
 ```ts
+import { DialogueSystem, MissionSystem, NOVA_CITY_STARTER_DIALOGUES, NOVA_CITY_STARTER_MISSIONS } from "./index";
+import { ProgressionSystem } from "../gameplay/progression";
 const progression = new ProgressionSystem();
 progression.initialize(world, playerId);
 
