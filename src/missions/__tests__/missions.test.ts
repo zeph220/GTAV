@@ -54,7 +54,7 @@ describe("mission progression", () => {
     const { world, playerId, missions } = setup();
     missions.startMission(world, playerId, "intro");
     const snapshot = missions.getSnapshot(world, playerId)!;
-    snapshot.activeMissionIds.splice(0);
+    (snapshot.activeMissionIds as string[]).splice(0);
     snapshot.missions.intro!.objectives[0]!.currentCount = 99;
     expect(world.getComponent(playerId, MissionJournal)?.activeMissionIds).toEqual(["intro"]);
     expect(world.getComponent(playerId, MissionJournal)?.missions.intro?.objectives[0]?.currentCount).toBe(0);
