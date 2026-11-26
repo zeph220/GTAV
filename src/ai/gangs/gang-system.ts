@@ -254,7 +254,7 @@ export class GangSystem implements GameSystem {
       }
 
       const nextState: GangMemberState = target
-        ? target.reputation <= -50 && member.aggression >= 0.55 ? "confronting" : "alert"
+        ? target.reputation <= -75 && member.aggression >= 0.55 ? "confronting" : "alert"
         : "idle";
       const nextTarget = target?.playerId ?? null;
       if (member.state === nextState && member.targetPlayerId === nextTarget) continue;
