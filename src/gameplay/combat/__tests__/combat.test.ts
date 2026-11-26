@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { ControlLock, PlayerInputState, Transform } from "../../ecs/components";
 import { World } from "../../ecs/world";
 import { createPlayer } from "../../player/create-player";
@@ -25,14 +25,31 @@ describe("non-lethal combat", () => {
     const { world, attackerId, targetId } = makeCombatants();
     const applied: Array<{ appliedDamage: number; remainingHealth: number }> = [];
     const damage = new DamageSystem({ onDamage: (result) => applied.push(result) });
-    const combat = new CombatSystem(damage);
+    const enqueue = vi.spyOn(damage, "enqueueDamage");
+    const resolutions: Array<{ success: boolean; reason?: string }> = [];
+    const combat = new CombatSystem(damage, {
+      onAttackResolved: (result) => resolutions.push(result),
+    });
     combat.requestAttack(attackerId, targetId);
     combat.update(world, 1 / 60);
+    expect(resolutions).toHaveLength(1);
+    expect(resolutions[0]?.success).toBe(true);
+    expect(enqueue).toHaveBeenCalledTimes(1);
     damage.update(world, 1 / 60);
     expect(applied).toEqual([{ appliedDamage: 30, remainingHealth: 70 }]);
     expect(world.getComponent(targetId, Health)?.current).toBe(70);
     expect(world.getComponent(targetId, Stunned)?.remainingSeconds).toBe(2.5);
     expect(world.getComponent(targetId, ControlLock)?.reason).toBe("stunned");
+  });
+
+  it("applies directly queued damage to an entity with health", () => {
+    const { world, attackerId, targetId } = makeCombatants();
+    const applied: Array<{ appliedDamage: number; remainingHealth: number }> = [];
+    const damage = new DamageSystem({ onDamage: (result) => applied.push(result) });
+    damage.enqueueDamage({ sourceId: attackerId, targetId, amount: 30 });
+    damage.update(world, 1 / 60);
+    expect(applied).toEqual([{ appliedDamage: 30, remainingHealth: 70 }]);
+    expect(world.getComponent(targetId, Health)?.current).toBe(70);
   });
 
   it("never reduces health below one, even after repeated hits", () => {
