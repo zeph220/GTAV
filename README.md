@@ -31,6 +31,8 @@ La base SQLite de développement est créée dans `data/nova-city.sqlite`. Le ch
 npm run lint
 npm run typecheck
 npm test
+npx playwright install chromium
+npm run test:e2e
 npm run build
 ```
 
