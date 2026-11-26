@@ -3,6 +3,7 @@
 Ce module appartient à `src/ai/**`.
 
 - `NOVA_CITY_GANGS` déclare trois factions originales avec des identifiants stables.
+- `createNovaCityGangSystem()` enregistre ces factions et leurs relations initiales.
 - `GangSystem.registerTerritory` reçoit les positions et rayons fournis par le monde.
 - `GangSystem.spawnMember` et `registerMember` gèrent les membres ECS.
 - `trackPlayer` active les transitions d'entrée/sortie de territoire.
