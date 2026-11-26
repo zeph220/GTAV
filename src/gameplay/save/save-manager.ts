@@ -63,7 +63,7 @@ export class SaveManager {
       const adapter = this.adapters.get(id);
       if (adapter && !adapter.validate(value)) return { ok: false, reason: "invalid" };
     }
-    const document = parsed as SaveDocument;
+    const document = parsed as unknown as SaveDocument;
     for (const [id, value] of Object.entries(document.sections)) this.adapters.get(id)?.restore(world, playerId, value);
     return { ok: true, document };
   }
