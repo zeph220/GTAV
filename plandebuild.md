@@ -376,8 +376,8 @@ réactions environnementales
 Les fondations des modules monde/rendu/véhicules ont été reprises sur `main` afin de poursuivre l'intégration technique. Cette reprise conserve les frontières de modules et n'autorise pas de modification non documentée de `src/shared`.
 
 - **Itération 10 — Monde :** terminée. Génération déterministe des huit quartiers, îlots, graphe routier connecté, bâtiments et terrain.
-- **Itération 11 — Rendu :** terminée. Scène React Three Fiber raccordée au monde, terrain coloré, chaussées et marquages, bâtiments et vitrages instanciés, arbres, éclairage, ombres, brouillard, commandes orbitales et rendu à la demande. Scène React Three Fiber raccordée au monde, terrain coloré, chaussées et marquages, bâtiments et vitrages instanciés, arbres, éclairage, ombres, brouillard et commandes orbitales.
-- **Itération 12 — Véhicules :** à réaliser. Physique et conduite, puis raccordement au graphe routier existant.
+- **Itération 11 — Rendu :** terminée. Scène React Three Fiber raccordée au monde, terrain coloré, chaussées et marquages, bâtiments et vitrages instanciés, arbres, éclairage, ombres, brouillard, commandes orbitales et rendu à la demande.
+- **Itération 12 — Véhicules :** en cours. ECS véhicule, modèle de conduite à masse/forces, marche arrière, freinage et braquage, navigation Dijkstra, suivi autonome d'itinéraires, voiture jouable au clavier, véhicule de trafic, caméra de poursuite et compteur de vitesse. Les collisions, suspensions, adhérence latérale, trafic dense et stationnement dynamique restent hors de cette première tranche.
 
 Chaque étape doit respecter la définition de terminé ci-dessous : lint, typage, tests unitaires, tests navigateur, build et documentation.
 
