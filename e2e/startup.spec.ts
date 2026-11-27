@@ -9,6 +9,7 @@ test("NOVA CITY renders its world, then drives a vehicle and pauses", async ({ p
   await expect(page.getByRole("complementary", { name: "Quartiers de NOVA CITY" })
     .getByText("Downtown")).toBeVisible();
   await expect(page.getByText("8 QUARTIERS")).toBeVisible();
+  await expect(page.getByTestId("pedestrian-population")).toHaveText("42 PIÉTONS");
 
   const canvas = page.locator("canvas");
   await canvas.hover({ position: { x: 420, y: 330 } });
