@@ -6,10 +6,11 @@ import * as THREE from "three";
  * Lightweight desktop orbit camera. Left mouse drag orbits, right mouse drag
  * pans, and the wheel zooms. UI overlays are excluded from drag initiation.
  */
-export function CityCameraControls() {
+export function CityCameraControls({ enabled = true }: { enabled?: boolean }) {
   const { camera, gl, invalidate } = useThree();
 
   useEffect(() => {
+    if (!enabled) return;
     const canvas = gl.domElement;
     const eventSurface = canvas.parentElement ?? canvas;
     const target = new THREE.Vector3(0, 0, 0);
@@ -106,7 +107,7 @@ export function CityCameraControls() {
       canvas.style.cursor = "";
       eventSurface.style.cursor = "";
     };
-  }, [camera, enabled, gl]);
+  }, [camera, enabled, gl, invalidate]);
 
   return null;
 }
