@@ -154,6 +154,54 @@ h1 {
   box-shadow: 0 0 10px #84c8a888;
 }
 .footnote-divider { color: #506b74; }
+.driving-hud {
+  position: absolute;
+  right: clamp(22px, 4vw, 66px);
+  bottom: clamp(62px, 9vh, 105px);
+  z-index: 2;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: end;
+  column-gap: 8px;
+  padding: 17px 19px 14px;
+  min-width: 188px;
+  border: 1px solid #dce8e755;
+  border-radius: 3px;
+  background: linear-gradient(145deg, #10212beF, #172d38d9);
+  box-shadow: 0 18px 55px #10202b44;
+  backdrop-filter: blur(16px);
+}
+.speed-caption {
+  grid-column: 1 / -1;
+  margin-bottom: 3px;
+  color: #9ccbd0;
+  font-family: "DM Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.16em;
+}
+.driving-hud strong {
+  color: #f3f7f4;
+  font-size: 38px;
+  line-height: 1;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.speed-unit {
+  padding-bottom: 4px;
+  color: #9ab0b5;
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+.driving-keys {
+  grid-column: 1 / -1;
+  margin-top: 12px;
+  color: #86a4aa;
+  font-family: "DM Mono", monospace;
+  font-size: 7px;
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+}
 .district-rail {
   position: absolute;
   z-index: 2;
@@ -211,6 +259,9 @@ h1 {
 }
 @media (max-width: 700px) {
   .district-rail { display: none; }
+  .driving-hud { right: 18px; bottom: 58px; min-width: 148px; padding: 14px; }
+  .driving-hud strong { font-size: 30px; }
+  .driving-keys { max-width: 160px; font-size: 6px; }
   .game-header { padding: 20px; }
   .world-metrics { display: none; }
   .game-panel {
