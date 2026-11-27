@@ -18,6 +18,7 @@ function App() {
   return (
     <main className="game-shell">
       <Canvas
+        frameloop="demand"
         shadows
         dpr={[1, 1.5]}
         camera={{
