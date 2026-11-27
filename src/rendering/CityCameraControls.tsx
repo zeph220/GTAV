@@ -11,6 +11,7 @@ export function CityCameraControls() {
 
   useEffect(() => {
     const canvas = gl.domElement;
+    const eventSurface = canvas.parentElement ?? canvas;
     const target = new THREE.Vector3(0, 0, 0);
     const spherical = new THREE.Spherical().setFromVector3(
       camera.position.clone().sub(target),
@@ -27,10 +28,16 @@ export function CityCameraControls() {
     };
 
     const handlePointerDown = (event: PointerEvent) => {
+      const eventTarget = event.target;
+      if (
+        !(eventTarget instanceof Node) ||
+        !(eventTarget === eventSurface || eventSurface.contains(eventTarget))
+      ) return;
       if (event.button !== 0 && event.button !== 2) return;
       activePointerId = event.pointerId;
       activeButton = event.button;
       canvas.style.cursor = "grabbing";
+      eventSurface.style.cursor = "grabbing";
       event.preventDefault();
     };
 
@@ -61,6 +68,7 @@ export function CityCameraControls() {
       activePointerId = null;
       activeButton = null;
       canvas.style.cursor = "grab";
+      eventSurface.style.cursor = "grab";
     };
 
     const handleWheel = (event: WheelEvent) => {
@@ -76,8 +84,9 @@ export function CityCameraControls() {
     const preventContextMenu = (event: MouseEvent) => event.preventDefault();
 
     canvas.style.cursor = "grab";
+    eventSurface.style.cursor = "grab";
     updateCamera();
-    canvas.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("pointerdown", handlePointerDown);
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerup", releasePointer);
     window.addEventListener("pointercancel", releasePointer);
@@ -85,13 +94,14 @@ export function CityCameraControls() {
     canvas.addEventListener("contextmenu", preventContextMenu);
 
     return () => {
-      canvas.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("pointerdown", handlePointerDown);
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", releasePointer);
       window.removeEventListener("pointercancel", releasePointer);
       canvas.removeEventListener("wheel", handleWheel);
       canvas.removeEventListener("contextmenu", preventContextMenu);
       canvas.style.cursor = "";
+      eventSurface.style.cursor = "";
     };
   }, [camera, gl]);
 
