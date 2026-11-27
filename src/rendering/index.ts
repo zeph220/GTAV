@@ -10,3 +10,4 @@ export {
   createTerrainGeometry,
 } from "./city-geometry";
 export type { BuildingWindowInstance } from "./city-geometry";
+export { PedestrianScene } from "./PedestrianScene";
