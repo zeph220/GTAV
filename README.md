@@ -45,8 +45,12 @@ npm run build
 - `src/gameplay`, `src/ai`, `src/missions` : logique de jeu indépendante du rendu.
 - `src/server` : API Fastify et persistance de développement SQLite.
 - `src/world` : génération déterministe des huit quartiers, îlots, routes, bâtiments et terrain.
-- `src/rendering` : scène urbaine React Three Fiber, façades instanciées, végétation, éclairage, ombres, caméra orbitale et modèles de véhicules.
+- `src/rendering` : scène urbaine React Three Fiber, façades instanciées, végétation, éclairage, ombres, piétons animés, caméra orbitale et modèles de véhicules.
 - `src/vehicles` : composants ECS de conduite, physique arcade à forces et masse, itinéraires routiers et première circulation autonome.
+
+## Population piétonne
+
+La scène présente une population déterministe de 42 piétons. Ils circulent sur des cheminements dérivés des routes, se promènent et réagissent aux menaces via les systèmes IA indépendants du rendu.
 
 ## Conduite
 
