@@ -9,7 +9,7 @@ import {
 import { CivilianSpawner } from "../spawning/civilian-spawner";
 import { PedestrianSystem } from "../systems/pedestrian-system";
 
-export const DEFAULT_CITY_PEDESTRIAN_POPULATION = 42;
+export const DEFAULT_CITY_PEDESTRIAN_POPULATION = 24;
 
 const ARCHETYPES = ["commuter", "resident", "visitor", "worker"] as const;
 
