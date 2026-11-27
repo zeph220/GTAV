@@ -228,7 +228,6 @@ function BuildingWindows({
     <instancedMesh
       ref={meshRef}
       args={[geometry, material, windows.length]}
-      castShadow
     />
   ) : null;
 }
