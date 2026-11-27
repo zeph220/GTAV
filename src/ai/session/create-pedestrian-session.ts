@@ -16,6 +16,8 @@ const ARCHETYPES = ["commuter", "resident", "visitor", "worker"] as const;
 export interface PedestrianSessionOptions {
   population?: number;
   sidewalkOffset?: number;
+  /** Radius around the city centre used for the initial loaded pedestrian district. */
+  spawnRadiusMeters?: number;
 }
 
 export interface PedestrianSession {
@@ -35,15 +37,25 @@ export function createPedestrianSession(
     throw new Error("Pedestrian population must be an integer between 0 and 250");
   }
 
+  const spawnRadiusMeters = options.spawnRadiusMeters ?? 220;
+  if (!Number.isFinite(spawnRadiusMeters) || spawnRadiusMeters <= 0) {
+    throw new Error("Pedestrian spawn radius must be positive and finite");
+  }
+
   const navigation = createCityPedestrianNavigation(city, {
     sidewalkOffset: options.sidewalkOffset,
   });
-  if (population > 0 && navigation.spawnPoints.length === 0) {
+  const cityCenterX = (city.bounds.minX + city.bounds.maxX) / 2;
+  const cityCenterZ = (city.bounds.minZ + city.bounds.maxZ) / 2;
+  const localSpawnPoints = navigation.spawnPoints.filter((position) =>
+    Math.hypot(position.x - cityCenterX, position.z - cityCenterZ) <= spawnRadiusMeters
+  );
+  if (population > 0 && localSpawnPoints.length === 0) {
     throw new Error("Cannot spawn pedestrians because the city has no sidewalk navigation nodes");
   }
 
   const random = createSeededRandom(`${city.seed}:pedestrians`);
-  const spawnPoints = navigation.spawnPoints.map((position, index) => ({
+  const spawnPoints = localSpawnPoints.map((position, index) => ({
     position,
     weight: 1,
     archetype: ARCHETYPES[index % ARCHETYPES.length],
