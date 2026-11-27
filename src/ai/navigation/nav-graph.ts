@@ -43,6 +43,26 @@ export class NavGraph {
 
   get size(): number { return this.nodes.size; }
 
+  getNodes(): NavNode[] {
+    return [...this.nodes.values()]
+      .sort((a, b) => a.id.localeCompare(b.id))
+      .map((node) => ({ ...node, position: { ...node.position } }));
+  }
+
+  nodesWithin(position: Vec3, maxDistance: number): NavNode[] {
+    if (!isFiniteVec3(position) || !Number.isFinite(maxDistance) || maxDistance < 0) {
+      return [];
+    }
+    const candidates = [...this.nodes.values()]
+      .map((node) => ({ node, distance: distance3(position, node.position) }))
+      .filter(({ distance }) => distance <= maxDistance)
+      .sort((a, b) => a.distance - b.distance || a.node.id.localeCompare(b.node.id));
+    return candidates.map(({ node }) => ({
+      ...node,
+      position: { ...node.position },
+    }));
+  }
+
   nearestNode(position: Vec3, maxDistance = Number.POSITIVE_INFINITY): NavNode | undefined {
     let nearest: NavNode | undefined;
     let best = maxDistance;
