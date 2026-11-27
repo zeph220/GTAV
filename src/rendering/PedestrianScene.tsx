@@ -2,6 +2,7 @@ import { useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import type { GeneratedCity } from "../world/world-types";
+import { DEFAULT_CITY_PEDESTRIAN_POPULATION } from "../ai/session/create-pedestrian-session";
 import { Transform } from "../gameplay/ecs/components";
 import { Civilian } from "../ai/civilian/civilian-components";
 import { createPedestrianSession } from "../ai/session/create-pedestrian-session";
@@ -35,7 +36,7 @@ interface PedestrianSceneProps {
 export function PedestrianScene({
   city,
   active = true,
-  population = 42,
+  population = DEFAULT_CITY_PEDESTRIAN_POPULATION,
 }: PedestrianSceneProps) {
   const session = useMemo(
     () => createPedestrianSession(city, { population }),
