@@ -30,7 +30,6 @@ export function CityCameraControls() {
       if (event.button !== 0 && event.button !== 2) return;
       activePointerId = event.pointerId;
       activeButton = event.button;
-      canvas.setPointerCapture(event.pointerId);
       canvas.style.cursor = "grabbing";
       event.preventDefault();
     };
@@ -59,9 +58,6 @@ export function CityCameraControls() {
 
     const releasePointer = (event: PointerEvent) => {
       if (activePointerId !== event.pointerId) return;
-      if (canvas.hasPointerCapture(event.pointerId)) {
-        canvas.releasePointerCapture(event.pointerId);
-      }
       activePointerId = null;
       activeButton = null;
       canvas.style.cursor = "grab";
@@ -82,17 +78,17 @@ export function CityCameraControls() {
     canvas.style.cursor = "grab";
     updateCamera();
     canvas.addEventListener("pointerdown", handlePointerDown);
-    canvas.addEventListener("pointermove", handlePointerMove);
-    canvas.addEventListener("pointerup", releasePointer);
-    canvas.addEventListener("pointercancel", releasePointer);
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", releasePointer);
+    window.addEventListener("pointercancel", releasePointer);
     canvas.addEventListener("wheel", handleWheel, { passive: false });
     canvas.addEventListener("contextmenu", preventContextMenu);
 
     return () => {
       canvas.removeEventListener("pointerdown", handlePointerDown);
-      canvas.removeEventListener("pointermove", handlePointerMove);
-      canvas.removeEventListener("pointerup", releasePointer);
-      canvas.removeEventListener("pointercancel", releasePointer);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", releasePointer);
+      window.removeEventListener("pointercancel", releasePointer);
       canvas.removeEventListener("wheel", handleWheel);
       canvas.removeEventListener("contextmenu", preventContextMenu);
       canvas.style.cursor = "";
