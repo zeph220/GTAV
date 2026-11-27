@@ -101,8 +101,8 @@ export function CityCameraControls() {
     window.addEventListener("pointercancel", releasePointer);
     window.addEventListener("mouseup", releaseMouse);
     window.addEventListener("blur", releaseMouse);
-    canvas.addEventListener("wheel", handleWheel, { passive: false });
-    canvas.addEventListener("contextmenu", preventContextMenu);
+    eventSurface.addEventListener("wheel", handleWheel, { passive: false });
+    eventSurface.addEventListener("contextmenu", preventContextMenu);
 
     return () => {
       window.removeEventListener("pointerdown", handlePointerDown);
@@ -111,8 +111,8 @@ export function CityCameraControls() {
       window.removeEventListener("pointercancel", releasePointer);
       window.removeEventListener("mouseup", releaseMouse);
       window.removeEventListener("blur", releaseMouse);
-      canvas.removeEventListener("wheel", handleWheel);
-      canvas.removeEventListener("contextmenu", preventContextMenu);
+      eventSurface.removeEventListener("wheel", handleWheel);
+      eventSurface.removeEventListener("contextmenu", preventContextMenu);
       canvas.style.cursor = "";
       eventSurface.style.cursor = "";
     };
