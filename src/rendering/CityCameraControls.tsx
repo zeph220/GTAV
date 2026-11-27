@@ -7,7 +7,7 @@ import * as THREE from "three";
  * pans, and the wheel zooms. UI overlays are excluded from drag initiation.
  */
 export function CityCameraControls() {
-  const { camera, gl } = useThree();
+  const { camera, gl, invalidate } = useThree();
 
   useEffect(() => {
     const canvas = gl.domElement;
@@ -24,6 +24,7 @@ export function CityCameraControls() {
       );
       camera.lookAt(target);
       camera.updateMatrixWorld();
+      invalidate();
     };
 
     const isUiTarget = (event: MouseEvent) =>
