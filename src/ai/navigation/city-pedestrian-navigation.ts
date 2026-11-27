@@ -49,7 +49,7 @@ export function createCityPedestrianNavigation(
   const sidewalkPoints = new Map<string, SidewalkPoint>();
   const intersectionEndpoints = new Map<string, IntersectionEndpoint[]>();
 
-  const ensureSidewalkPoint = (roadNode: RoadNode, x: number, z: number): string => {
+  const ensureSidewalkPoint = (x: number, z: number): string => {
     const keyX = coordinateKey(x);
     const keyZ = coordinateKey(z);
     const id = `sidewalk:${keyX}:${keyZ}`;
@@ -62,7 +62,6 @@ export function createCityPedestrianNavigation(
       graph.addNode({ id, position });
       sidewalkPoints.set(id, { id, position });
     }
-    void roadNode;
     return id;
   };
 
@@ -100,12 +99,10 @@ export function createCityPedestrianNavigation(
       const shiftX = normalX * offset * side;
       const shiftZ = normalZ * offset * side;
       const startId = ensureSidewalkPoint(
-        from,
         from.position.x + shiftX,
         from.position.z + shiftZ,
       );
       const endId = ensureSidewalkPoint(
-        to,
         to.position.x + shiftX,
         to.position.z + shiftZ,
       );
