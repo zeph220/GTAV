@@ -90,6 +90,25 @@ describe("VehicleDrivingSystem", () => {
     expect(world.getComponent(entityId, VehicleDynamics)!.speedMps).toBeLessThan(1);
   });
 
+  it("uses vehicle mass when converting engine force into acceleration", () => {
+    const light = createTestVehicle();
+    const heavyWorld = new World();
+    const heavyEntity = createVehicle(heavyWorld, {
+      handling: { massKg: 2900 },
+    });
+    const heavySystem = new VehicleDrivingSystem();
+
+    setVehicleControls(light.world, light.entityId, { throttle: 1 });
+    setVehicleControls(heavyWorld, heavyEntity, { throttle: 1 });
+    step(light.system, light.world, 60);
+    step(heavySystem, heavyWorld, 60);
+
+    const lightSpeed = light.world.getComponent(light.entityId, VehicleDynamics)!.speedMps;
+    const heavySpeed = heavyWorld.getComponent(heavyEntity, VehicleDynamics)!.speedMps;
+    expect(lightSpeed).toBeGreaterThan(heavySpeed);
+    expect(heavySpeed).toBeGreaterThan(0);
+  });
+
   it("rejects invalid handling without leaving a partial ECS entity", () => {
     const world = new World();
 
