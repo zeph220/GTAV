@@ -5,6 +5,7 @@ import { useGameStore } from "./app/game-store";
 import { generateCity } from "./world";
 import { CityScene } from "./rendering/CityScene";
 import { VehicleScene } from "./rendering/VehicleScene";
+import { PedestrianScene } from "./rendering/PedestrianScene";
 import "./style.css";
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
           active={phase === "playing"}
           onSpeedChange={setSpeedKph}
         />
+        <PedestrianScene city={city} active={phase !== "paused"} />
       </Canvas>
 
       <header className="game-header">
