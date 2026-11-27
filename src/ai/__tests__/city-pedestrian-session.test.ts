@@ -57,6 +57,9 @@ describe("NOVA CITY pedestrian integration", () => {
     });
 
     expect(firstPopulation).toEqual(secondPopulation);
+    expect(firstPopulation.every((civilian) =>
+      Math.hypot(civilian.position.x, civilian.position.z) <= 220
+    )).toBe(true);
     expect(new Set(firstPopulation.map((civilian) => civilian.archetype)).size)
       .toBeGreaterThan(1);
   });
@@ -90,6 +93,7 @@ describe("NOVA CITY pedestrian integration", () => {
   it("rejects unsafe population sizes and invalid sidewalk geometry", () => {
     const city = generateCity({ seed: "pedestrian-validation-test" });
     expect(() => createPedestrianSession(city, { population: 251 })).toThrow(/between 0 and 250/);
+    expect(() => createPedestrianSession(city, { spawnRadiusMeters: 0 })).toThrow(/spawn radius/);
     expect(() => createCityPedestrianNavigation(city, { sidewalkOffset: 0 })).toThrow(/Sidewalk offset/);
   });
 });
