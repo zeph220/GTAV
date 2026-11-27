@@ -1,6 +1,7 @@
 import { useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import type { GeneratedCity, BuildingLot, BuildingStyle } from "../world/world-types";
+import { CityCameraControls } from "./CityCameraControls";
 import {
   createAsphaltGeometry,
   createBuildingWindowInstances,
@@ -78,6 +79,7 @@ export function CityScene({ city }: CitySceneProps) {
 
   return (
     <>
+      <CityCameraControls />
       <color attach="background" args={["#aebfc5"]} />
       <fog attach="fog" args={["#b8c8ca", 760, 2350]} />
       <hemisphereLight args={["#e3edf5", "#34473b", 1.05]} />
