@@ -1,15 +1,17 @@
 import { Canvas } from "@react-three/fiber";
-import { StrictMode, useMemo } from "react";
+import { StrictMode, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { useGameStore } from "./app/game-store";
 import { generateCity } from "./world";
 import { CityScene } from "./rendering/CityScene";
+import { VehicleScene } from "./rendering/VehicleScene";
 import "./style.css";
 
 function App() {
   const phase = useGameStore((state) => state.phase);
   const setPhase = useGameStore((state) => state.setPhase);
   const togglePause = useGameStore((state) => state.togglePause);
+  const [speedKph, setSpeedKph] = useState(0);
   const city = useMemo(
     () => generateCity({ seed: "nova-city-preview-11", terrainSegmentsPerDistrict: 16 }),
     [],
@@ -30,7 +32,12 @@ function App() {
         gl={{ antialias: true, powerPreference: "high-performance" }}
         onCreated={({ camera }) => camera.lookAt(0, 0, 0)}
       >
-        <CityScene city={city} />
+        <CityScene city={city} enableCameraControls={phase !== "playing"} />
+        <VehicleScene
+          city={city}
+          active={phase === "playing"}
+          onSpeedChange={setSpeedKph}
+        />
       </Canvas>
 
       <header className="game-header">
@@ -72,7 +79,7 @@ function App() {
         </p>
         {phase === "menu" ? (
           <button className="primary-button" onClick={() => setPhase("playing")}>
-            Entrer dans la ville <span aria-hidden="true">↗</span>
+            Prendre le volant <span aria-hidden="true">↗</span>
           </button>
         ) : (
           <button className="primary-button" onClick={togglePause}>
@@ -83,9 +90,18 @@ function App() {
           <span className="live-dot" />
           SCÈNE 3D ACTIVE
           <span className="footnote-divider">/</span>
-          GÉOMÉTRIE INSTANCIÉE
+          VÉHICULES ET TRAFIC
         </div>
       </section>
+
+      {phase === "playing" ? (
+        <aside className="driving-hud" aria-label="Télémétrie du véhicule">
+          <span className="speed-caption">VITESSE</span>
+          <strong data-testid="vehicle-speed">{speedKph}</strong>
+          <span className="speed-unit">KM/H</span>
+          <span className="driving-keys">WASD / FLÈCHES · ESPACE FREIN · MAJ FREIN À MAIN</span>
+        </aside>
+      ) : null}
 
       <footer className="game-footer">
         <span>NOVA CITY / VISUAL BUILD 0.11</span>
