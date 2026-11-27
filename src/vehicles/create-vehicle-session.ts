@@ -51,7 +51,7 @@ export function createVehicleSession(city: GeneratedCity): VehicleSession {
   const trafficVehicleId = createVehicle(world, {
     position: {
       x: firstNode.position.x,
-      y: firstNode.position.y + 0.14,
+      y: firstNode.position.y + 0.22,
       z: firstNode.position.z,
     },
     rotationY: initialHeading,
@@ -119,7 +119,7 @@ function findPlayerRoadSpawn(city: GeneratedCity): {
   return {
     position: {
       x: (centerNode.position.x + road.other.position.x) / 2,
-      y: (centerNode.position.y + road.other.position.y) / 2 + 0.14,
+      y: (centerNode.position.y + road.other.position.y) / 2 + 0.22,
       z: (centerNode.position.z + road.other.position.z) / 2,
     },
     heading: road.heading,
