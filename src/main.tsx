@@ -88,7 +88,7 @@ function App() {
 
       <footer className="game-footer">
         <span>NOVA CITY / VISUAL BUILD 0.11</span>
-        <span>WORLD SEED&nbsp; {city.seed.toUpperCase()}</span>
+        <span>DRAG / ORBIT&nbsp; · &nbsp;WHEEL / ZOOM&nbsp; · &nbsp;RIGHT DRAG / PAN</span>
       </footer>
     </main>
   );
