@@ -32,22 +32,26 @@ export class VehicleDrivingSystem implements GameSystem {
       const reversingAgainstMotion = speed * controls.throttle < -0.15;
 
       if (brakeInput > 0) {
-        const braking = controls.handbrake
-          ? dynamics.handbrakeAccelerationMps2
-          : dynamics.brakingAccelerationMps2;
-        speed = approachZero(speed, braking * brakeInput * delta);
+        const brakingForce = controls.handbrake
+          ? dynamics.handbrakeForceNewtons
+          : dynamics.brakingForceNewtons;
+        const brakingAcceleration = brakingForce / dynamics.massKg;
+        speed = approachZero(speed, brakingAcceleration * brakeInput * delta);
       } else if (reversingAgainstMotion && Math.abs(speed) > 0.4) {
         speed = approachZero(
           speed,
-          dynamics.brakingAccelerationMps2 * 0.55 * Math.abs(controls.throttle) * delta,
+          (dynamics.brakingForceNewtons / dynamics.massKg) *
+            0.55 * Math.abs(controls.throttle) * delta,
         );
       } else {
-        speed += controls.throttle * dynamics.engineAccelerationMps2 * delta;
+        speed += controls.throttle *
+          (dynamics.engineForceNewtons / dynamics.massKg) * delta;
       }
 
-      const drag = dynamics.rollingResistanceMps2 +
-        dynamics.aerodynamicDrag * speed * Math.abs(speed);
-      speed = approachZero(speed, Math.max(0, drag) * delta);
+      const dragForce = dynamics.rollingResistanceNewtons +
+        dynamics.aerodynamicDragCoefficient * speed * Math.abs(speed);
+      const dragAcceleration = Math.max(0, dragForce) / dynamics.massKg;
+      speed = approachZero(speed, dragAcceleration * delta);
       speed = Math.max(
         -dynamics.maxReverseSpeedMps,
         Math.min(dynamics.maxForwardSpeedMps, speed),
