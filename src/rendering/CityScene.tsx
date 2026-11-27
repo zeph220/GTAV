@@ -35,9 +35,10 @@ const BUILDING_PALETTES: Record<BuildingStyle, readonly number[]> = {
 
 interface CitySceneProps {
   city: GeneratedCity;
+  enableCameraControls?: boolean;
 }
 
-export function CityScene({ city }: CitySceneProps) {
+export function CityScene({ city, enableCameraControls = true }: CitySceneProps) {
   const terrainGeometry = useMemo(
     () => createTerrainGeometry(city.terrain),
     [city],
@@ -79,7 +80,7 @@ export function CityScene({ city }: CitySceneProps) {
 
   return (
     <>
-      <CityCameraControls />
+      {enableCameraControls ? <CityCameraControls /> : null}
       <color attach="background" args={["#aebfc5"]} />
       <fog attach="fog" args={["#b8c8ca", 760, 2350]} />
       <hemisphereLight args={["#e3edf5", "#34473b", 1.05]} />
