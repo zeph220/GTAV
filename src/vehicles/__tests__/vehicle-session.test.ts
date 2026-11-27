@@ -39,4 +39,23 @@ describe("createVehicleSession", () => {
       trafficAfter.position.z - trafficStart.z,
     )).toBeGreaterThan(1);
   });
+  it("sizes its traffic loop for different procedural road-grid densities", () => {
+    for (const blocksPerDistrict of [2, 8]) {
+      const city = generateCity({
+        seed: `vehicle-grid-${blocksPerDistrict}`,
+        blocksPerDistrict,
+        terrainSegmentsPerDistrict: 1,
+      });
+      const session = createVehicleSession(city);
+      const trafficId = session.trafficVehicleIds[0]!;
+
+      for (let index = 0; index < 60; index += 1) {
+        session.simulation.advance(1 / 60);
+      }
+
+      expect(session.world.getComponent(trafficId, VehicleDynamics)!.speedMps)
+        .toBeGreaterThan(0);
+    }
+  });
+
 });
