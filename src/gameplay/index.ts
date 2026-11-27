@@ -13,3 +13,4 @@ export * from "./combat/damage-system";
 export * from "./combat/equipment";
 export * from "./progression";
 export * from "./save";
+export * from "./simulation/game-simulation";
