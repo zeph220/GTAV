@@ -43,7 +43,21 @@ export const VehicleDynamics = defineComponent<VehicleDynamicsComponent>("Vehicl
 export const VehicleControls = defineComponent<VehicleControlsComponent>("VehicleControls");
 export const VehicleRoute = defineComponent<VehicleRouteComponent>("VehicleRoute");
 
-export const DEFAULT_VEHICLE_HANDLING = Object.freeze({
+export interface VehicleHandling {
+  massKg: number;
+  engineAccelerationMps2: number;
+  brakingAccelerationMps2: number;
+  handbrakeAccelerationMps2: number;
+  maxForwardSpeedMps: number;
+  maxReverseSpeedMps: number;
+  wheelBaseMeters: number;
+  maxSteeringAngleRadians: number;
+  steeringResponse: number;
+  rollingResistanceMps2: number;
+  aerodynamicDrag: number;
+}
+
+export const DEFAULT_VEHICLE_HANDLING: Readonly<VehicleHandling> = Object.freeze({
   massKg: 1450,
   engineAccelerationMps2: 7.2,
   brakingAccelerationMps2: 12.5,
