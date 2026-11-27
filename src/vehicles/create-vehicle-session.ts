@@ -23,25 +23,20 @@ export function createVehicleSession(city: GeneratedCity): VehicleSession {
     rotationY: playerSpawn.heading,
   });
 
+  const center = cityCenter(city);
+  const roadSpacingX = minimumRoadSpacing(
+    city.roadNetwork.nodes.map((node) => node.position.x),
+  );
+  const roadSpacingZ = minimumRoadSpacing(
+    city.roadNetwork.nodes.map((node) => node.position.z),
+  );
   const trafficRoute = findRoadRoute(
     city.roadNetwork,
     [
-      {
-        x: cityCenter(city).x - minimumRoadSpacing(city.roadNetwork.nodes.map((node) => node.position.x)),
-        z: cityCenter(city).z + minimumRoadSpacing(city.roadNetwork.nodes.map((node) => node.position.z)),
-      },
-      {
-        x: cityCenter(city).x + minimumRoadSpacing(city.roadNetwork.nodes.map((node) => node.position.x)),
-        z: cityCenter(city).z + minimumRoadSpacing(city.roadNetwork.nodes.map((node) => node.position.z)),
-      },
-      {
-        x: cityCenter(city).x + minimumRoadSpacing(city.roadNetwork.nodes.map((node) => node.position.x)),
-        z: cityCenter(city).z - minimumRoadSpacing(city.roadNetwork.nodes.map((node) => node.position.z)),
-      },
-      {
-        x: cityCenter(city).x - minimumRoadSpacing(city.roadNetwork.nodes.map((node) => node.position.x)),
-        z: cityCenter(city).z - minimumRoadSpacing(city.roadNetwork.nodes.map((node) => node.position.z)),
-      },
+      { x: center.x - roadSpacingX, z: center.z + roadSpacingZ },
+      { x: center.x + roadSpacingX, z: center.z + roadSpacingZ },
+      { x: center.x + roadSpacingX, z: center.z - roadSpacingZ },
+      { x: center.x - roadSpacingX, z: center.z - roadSpacingZ },
     ],
     true,
   );
