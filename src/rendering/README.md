@@ -10,7 +10,8 @@ Le module de rendu transforme les données déterministes de `src/world` en obje
 - des chaussées, bordures et marquages différenciés entre axes principaux et rues locales ;
 - des bâtiments instanciés par style, avec vitrages placés sur les façades et tenant compte de leur rotation ;
 - des arbres de rue instanciés (troncs et couronnes) ;
-- un éclairage hémisphérique et directionnel, des ombres et un brouillard atmosphérique.
+- un éclairage hémisphérique et directionnel, des ombres et un brouillard atmosphérique ;
+- une caméra orbitale pilotée à la souris : glisser pour tourner, molette pour zoomer et clic droit + glisser pour déplacer le point de vue.
 
 Les géométries statiques sont combinées en buffers et les éléments répétés passent par des `InstancedMesh` pour réduire le nombre d'objets et d'appels de dessin.
 
@@ -30,4 +31,4 @@ const city = generateCity({ seed: "nova-city-preview" });
 
 ## Limites actuelles
 
-Le rendu est procédural et stylisé : façades et végétation sont générées par géométrie, sans bibliothèque externe d'assets. Cette itération ne comprend pas encore de textures photographiques haute résolution, de shaders météo, d'éclairage global, de LOD, de streaming, de commandes de caméra ou de conduite. Ces travaux doivent rester des étapes mesurées, testées sur les navigateurs cibles.
+Le rendu est procédural et stylisé : façades et végétation sont générées par géométrie, sans bibliothèque externe d'assets. Cette itération ne comprend pas encore de textures photographiques haute résolution, de shaders météo, d'éclairage global, de LOD, de streaming ni de conduite. Ces travaux doivent rester des étapes mesurées, testées sur les navigateurs cibles.
