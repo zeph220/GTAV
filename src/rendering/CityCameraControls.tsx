@@ -106,7 +106,7 @@ export function CityCameraControls() {
       canvas.style.cursor = "";
       eventSurface.style.cursor = "";
     };
-  }, [camera, gl]);
+  }, [camera, enabled, gl]);
 
   return null;
 }
