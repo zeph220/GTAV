@@ -1,10 +1,9 @@
 import { Transform } from "../gameplay/ecs/components";
 import { World } from "../gameplay/ecs/world";
 import { GameSimulation } from "../gameplay/simulation/game-simulation";
-import type { GeneratedCity } from "../world/world-types";
-import { sampleTerrainHeight } from "../world/terrain/terrain-generator";
+import type { GeneratedCity, RoadNode } from "../world/world-types";
 import { createVehicle } from "./create-vehicle";
-import { findRoadRoute } from "./road-navigation";
+import { findNearestRoadNode, findRoadRoute } from "./road-navigation";
 import { RoadTrafficSystem, setVehicleRoute } from "./road-traffic-system";
 import { VehicleDrivingSystem } from "./vehicle-driving-system";
 
@@ -18,14 +17,10 @@ export interface VehicleSession {
 export function createVehicleSession(city: GeneratedCity): VehicleSession {
   const world = new World();
   const simulation = new GameSimulation(world);
-  const playerPosition = {
-    x: 40,
-    y: sampleTerrainHeight(40, 0, city.seed) + 0.22,
-    z: 0,
-  };
+  const playerSpawn = findPlayerRoadSpawn(city);
   const playerVehicleId = createVehicle(world, {
-    position: playerPosition,
-    rotationY: Math.PI / 2,
+    position: playerSpawn.position,
+    rotationY: playerSpawn.heading,
   });
 
   const trafficRoute = findRoadRoute(
@@ -45,10 +40,7 @@ export function createVehicleSession(city: GeneratedCity): VehicleSession {
     throw new Error("Generated traffic route contains an unknown spawn node");
   }
 
-  const initialHeading = Math.atan2(
-    secondNode.position.x - firstNode.position.x,
-    -(secondNode.position.z - firstNode.position.z),
-  );
+  const initialHeading = headingBetween(firstNode, secondNode);
   const trafficVehicleId = createVehicle(world, {
     position: {
       x: firstNode.position.x,
@@ -76,7 +68,6 @@ export function createVehicleSession(city: GeneratedCity): VehicleSession {
     system: new VehicleDrivingSystem(),
   });
 
-  // Ensure the runtime starts with a valid, finite pose for both cars.
   for (const entityId of [playerVehicleId, trafficVehicleId]) {
     const transform = world.getComponent(entityId, Transform);
     if (!transform) throw new Error("Vehicle session failed to create a transform");
@@ -88,4 +79,55 @@ export function createVehicleSession(city: GeneratedCity): VehicleSession {
     playerVehicleId,
     trafficVehicleIds: [trafficVehicleId],
   };
+}
+
+function findPlayerRoadSpawn(city: GeneratedCity): {
+  position: { x: number; y: number; z: number };
+  heading: number;
+} {
+  const centerNode = findNearestRoadNode(city.roadNetwork, { x: 0, z: 0 });
+  const nodes = new Map(city.roadNetwork.nodes.map((node) => [node.id, node]));
+  const candidates = city.roadNetwork.segments.flatMap((segment) => {
+    const otherId = segment.fromNodeId === centerNode.id
+      ? segment.toNodeId
+      : segment.toNodeId === centerNode.id
+        ? segment.fromNodeId
+        : null;
+    const other = otherId ? nodes.get(otherId) : undefined;
+    if (!other) return [];
+
+    const heading = headingBetween(centerNode, other);
+    return [{
+      other,
+      heading,
+      preference: angularDistance(heading, Math.PI / 2),
+      segmentId: segment.id,
+    }];
+  }).sort((a, b) =>
+    a.preference - b.preference || a.segmentId.localeCompare(b.segmentId)
+  );
+
+  const road = candidates[0];
+  if (!road) throw new Error("Generated road network has no segment near the player spawn");
+  return {
+    position: {
+      x: (centerNode.position.x + road.other.position.x) / 2,
+      y: (centerNode.position.y + road.other.position.y) / 2 + 0.14,
+      z: (centerNode.position.z + road.other.position.z) / 2,
+    },
+    heading: road.heading,
+  };
+}
+
+function headingBetween(from: RoadNode, to: RoadNode): number {
+  return Math.atan2(
+    to.position.x - from.position.x,
+    -(to.position.z - from.position.z),
+  );
+}
+
+function angularDistance(from: number, to: number): number {
+  const tau = Math.PI * 2;
+  const difference = ((from - to + Math.PI) % tau + tau) % tau - Math.PI;
+  return Math.abs(difference);
 }
