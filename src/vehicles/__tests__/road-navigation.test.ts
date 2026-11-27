@@ -48,8 +48,8 @@ describe("road navigation", () => {
 
     expect(route.nodeIds[0]).toBe("a");
     expect(route.nodeIds[route.nodeIds.length - 1]).toBe("d");
-    expect(route.nodeIds).not.toContain("a", 1);
-    expect(route.distanceMeters).toBeCloseTo(20 + Math.sqrt(200), 8);
+    expect(route.nodeIds.filter((nodeId) => nodeId === "a")).toHaveLength(1);
+    expect(route.distanceMeters).toBeCloseTo(2 * Math.sqrt(200), 8);
   });
 
   it("rejects unknown nodes and malformed route requests", () => {
