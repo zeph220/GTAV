@@ -94,7 +94,7 @@ export interface TerrainMeshData {
   segmentsZ: number;
   /** Row-major grid of positions; X/Z are horizontal and Y is elevation. */
   vertices: readonly WorldPoint3[];
-  /** Three indices per triangle, suitable for a non-index-restricted geometry. */
+  /** Triangle indices suitable for BufferGeometry.setIndex. */
   indices: readonly number[];
 }
 
