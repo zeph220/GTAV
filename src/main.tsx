@@ -1,9 +1,10 @@
 import { Canvas } from "@react-three/fiber";
-import { StrictMode, useMemo, useState } from "react";
+import { StrictMode, useCallback, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { useGameStore } from "./app/game-store";
 import { generateCity } from "./world";
 import { DEFAULT_CITY_PEDESTRIAN_POPULATION } from "./ai";
+import type { PedestrianThreat } from "./ai";
 import { CityScene } from "./rendering/CityScene";
 import { VehicleScene } from "./rendering/VehicleScene";
 import { PedestrianScene } from "./rendering/PedestrianScene";
@@ -14,6 +15,17 @@ function App() {
   const setPhase = useGameStore((state) => state.setPhase);
   const togglePause = useGameStore((state) => state.togglePause);
   const [speedKph, setSpeedKph] = useState(0);
+  const vehicleThreatsRef = useRef<readonly PedestrianThreat[]>([]);
+  const readVehicleThreats = useCallback(
+    () => vehicleThreatsRef.current,
+    [],
+  );
+  const publishVehicleThreats = useCallback(
+    (threats: readonly PedestrianThreat[]) => {
+      vehicleThreatsRef.current = threats;
+    },
+    [],
+  );
   const city = useMemo(
     () => generateCity({ seed: "nova-city-preview-11", terrainSegmentsPerDistrict: 16 }),
     [],
@@ -39,8 +51,13 @@ function App() {
           city={city}
           active={phase === "playing"}
           onSpeedChange={setSpeedKph}
+          onThreatsChange={publishVehicleThreats}
         />
-        <PedestrianScene city={city} active={phase === "playing"} />
+        <PedestrianScene
+          city={city}
+          active={phase === "playing"}
+          getThreats={readVehicleThreats}
+        />
       </Canvas>
 
       <header className="game-header">
