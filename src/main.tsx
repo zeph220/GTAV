@@ -40,7 +40,7 @@ function App() {
           active={phase === "playing"}
           onSpeedChange={setSpeedKph}
         />
-        <PedestrianScene city={city} active={phase !== "paused"} />
+        <PedestrianScene city={city} active={phase === "playing"} />
       </Canvas>
 
       <header className="game-header">
