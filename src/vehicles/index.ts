@@ -6,6 +6,7 @@ export {
   VehicleDynamics,
   VehicleRoute,
 } from "./vehicle-components";
+export type { VehicleHandling } from "./vehicle-components";
 export type {
   VehicleControlsComponent,
   VehicleDynamicsComponent,
