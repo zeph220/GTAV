@@ -6,7 +6,7 @@ Le module véhicule étend l'ECS existant sans ajouter de dépendance à Three.j
 
 `createVehicle` crée une entité avec les composants génériques `Transform` et `Velocity`, plus les composants `VehicleDynamics` et `VehicleControls`.
 
-`VehicleDrivingSystem` est un modèle de bicyclette arcade à pas fixe. Il gère l'accélération, le freinage, la marche arrière, la résistance au roulement, la traînée aérodynamique, la limite de vitesse et le braquage progressif. La vitesse est signée : une valeur négative indique une marche arrière.
+`VehicleDrivingSystem` est un modèle de bicyclette arcade à pas fixe. Il convertit les forces moteur, frein et traînée en accélérations à partir de la masse du véhicule. Il gère aussi la marche arrière, la résistance au roulement, la limite de vitesse et le braquage progressif. La vitesse est signée : une valeur négative indique une marche arrière.
 
 Les commandes normalisées sont accessibles par `setVehicleControls` :
 
