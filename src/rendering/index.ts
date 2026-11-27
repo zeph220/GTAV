@@ -1,3 +1,4 @@
+export { CityCameraControls } from "./CityCameraControls";
 export { CityScene } from "./CityScene";
 export {
   createAsphaltGeometry,
