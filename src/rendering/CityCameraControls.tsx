@@ -3,8 +3,8 @@ import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
 /**
- * Lightweight pointer-driven orbit camera. It intentionally avoids an extra
- * controls dependency and keeps all navigation state local to the renderer.
+ * Lightweight desktop orbit camera. Left mouse drag orbits, right mouse drag
+ * pans, and the wheel zooms. UI overlays are excluded from drag initiation.
  */
 export function CityCameraControls() {
   const { camera, gl } = useThree();
@@ -16,7 +16,6 @@ export function CityCameraControls() {
     const spherical = new THREE.Spherical().setFromVector3(
       camera.position.clone().sub(target),
     );
-    let activePointerId: number | null = null;
     let activeButton: number | null = null;
 
     const updateCamera = () => {
@@ -27,22 +26,21 @@ export function CityCameraControls() {
       camera.updateMatrixWorld();
     };
 
-    const handlePointerDown = (event: PointerEvent) => {
-      const eventTarget = event.target;
-      const isUiControl =
-        eventTarget instanceof Element &&
-        Boolean(eventTarget.closest(".game-panel, .game-header, .district-rail, .game-footer, button"));
-      if (isUiControl) return;
+    const isUiTarget = (event: MouseEvent) =>
+      event.target instanceof Element &&
+      Boolean(event.target.closest(".game-panel, .game-header, .district-rail, .game-footer, button"));
+
+    const handleMouseDown = (event: MouseEvent) => {
       if (event.button !== 0 && event.button !== 2) return;
-      activePointerId = event.pointerId;
+      if (isUiTarget(event)) return;
       activeButton = event.button;
       canvas.style.cursor = "grabbing";
       eventSurface.style.cursor = "grabbing";
       event.preventDefault();
     };
 
-    const handlePointerMove = (event: PointerEvent) => {
-      if (activePointerId !== event.pointerId || activeButton === null) return;
+    const handleMouseMove = (event: MouseEvent) => {
+      if (activeButton === null) return;
 
       if (activeButton === 0) {
         spherical.theta -= event.movementX * 0.004;
@@ -64,21 +62,16 @@ export function CityCameraControls() {
     };
 
     const resetDrag = () => {
-      if (activePointerId === null) return;
-      activePointerId = null;
+      if (activeButton === null) return;
       activeButton = null;
       canvas.style.cursor = "grab";
       eventSurface.style.cursor = "grab";
     };
 
-    const releasePointer = (event: PointerEvent) => {
-      if (activePointerId !== event.pointerId) return;
-      resetDrag();
+    const handleMouseUp = (event: MouseEvent) => {
+      if (activeButton === null) return;
+      if (event.button === activeButton || event.buttons === 0) resetDrag();
     };
-
-    // Mouseup is a fallback for browsers that omit pointerup on secondary
-    // button transitions; blur also prevents a stuck drag when focus is lost.
-    const releaseMouse = () => resetDrag();
 
     const handleWheel = (event: WheelEvent) => {
       event.preventDefault();
@@ -95,22 +88,18 @@ export function CityCameraControls() {
     canvas.style.cursor = "grab";
     eventSurface.style.cursor = "grab";
     updateCamera();
-    window.addEventListener("pointerdown", handlePointerDown, true);
-    window.addEventListener("pointermove", handlePointerMove, true);
-    window.addEventListener("pointerup", releasePointer, true);
-    window.addEventListener("pointercancel", releasePointer, true);
-    window.addEventListener("mouseup", releaseMouse, true);
-    window.addEventListener("blur", releaseMouse);
+    window.addEventListener("mousedown", handleMouseDown, true);
+    window.addEventListener("mousemove", handleMouseMove, true);
+    window.addEventListener("mouseup", handleMouseUp, true);
+    window.addEventListener("blur", resetDrag);
     eventSurface.addEventListener("wheel", handleWheel, { passive: false });
     eventSurface.addEventListener("contextmenu", preventContextMenu);
 
     return () => {
-      window.removeEventListener("pointerdown", handlePointerDown, true);
-      window.removeEventListener("pointermove", handlePointerMove, true);
-      window.removeEventListener("pointerup", releasePointer, true);
-      window.removeEventListener("pointercancel", releasePointer, true);
-      window.removeEventListener("mouseup", releaseMouse, true);
-      window.removeEventListener("blur", releaseMouse);
+      window.removeEventListener("mousedown", handleMouseDown, true);
+      window.removeEventListener("mousemove", handleMouseMove, true);
+      window.removeEventListener("mouseup", handleMouseUp, true);
+      window.removeEventListener("blur", resetDrag);
       eventSurface.removeEventListener("wheel", handleWheel);
       eventSurface.removeEventListener("contextmenu", preventContextMenu);
       canvas.style.cursor = "";
