@@ -7,7 +7,10 @@ import {
   type CityPedestrianNavigation,
 } from "../navigation/city-pedestrian-navigation";
 import { CivilianSpawner } from "../spawning/civilian-spawner";
-import { PedestrianSystem } from "../systems/pedestrian-system";
+import {
+  PedestrianSystem,
+  type PedestrianThreat,
+} from "../systems/pedestrian-system";
 
 export const DEFAULT_CITY_PEDESTRIAN_POPULATION = 24;
 
@@ -18,6 +21,8 @@ export interface PedestrianSessionOptions {
   sidewalkOffset?: number;
   /** Radius around the city centre used for the initial loaded pedestrian district. */
   spawnRadiusMeters?: number;
+  /** Live vehicle positions read by the pedestrian AI each simulation tick. */
+  threats?: () => readonly PedestrianThreat[];
 }
 
 export interface PedestrianSession {
@@ -67,7 +72,10 @@ export function createPedestrianSession(
   simulation.registerSystem({
     id: "pedestrian-ai",
     priority: 10,
-    system: new PedestrianSystem(navigation.graph, { random }),
+    system: new PedestrianSystem(navigation.graph, {
+      random,
+      threats: options.threats,
+    }),
   });
 
   return { world, simulation, navigation, pedestrianIds };
