@@ -7,7 +7,7 @@ import {
   VehicleDynamics,
 } from "./vehicle-components";
 
-export type VehicleHandlingOptions = Partial<typeof DEFAULT_VEHICLE_HANDLING>;
+export type VehicleHandlingOptions = Partial<import("./vehicle-components").VehicleHandling>;
 
 export interface CreateVehicleOptions {
   position?: Vec3;
@@ -85,7 +85,7 @@ function validatePosition(position: Vec3): void {
   }
 }
 
-function validateHandling(handling: typeof DEFAULT_VEHICLE_HANDLING): void {
+function validateHandling(handling: import("./vehicle-components").VehicleHandling): void {
   for (const [name, value] of Object.entries(handling)) {
     if (!Number.isFinite(value) || value <= 0) {
       throw new Error(`Vehicle handling ${name} must be a positive finite number`);
