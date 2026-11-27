@@ -79,6 +79,23 @@ describe("NOVA CITY pedestrian AI", () => {
     )).toBe(true);
   });
 
+  it("interpolates pedestrian height while walking along a slope", () => {
+    const world = new World();
+    const id = createCivilian(world, { x: 0, y: 0, z: 0 }, {
+      walkSpeed: 2,
+      random: () => 0,
+    });
+    const civilian = world.getComponent(id, Civilian)!;
+    civilian.path = [{ x: 5, y: 10, z: 0 }];
+    civilian.destination = { x: 5, y: 10, z: 0 };
+    civilian.waypointIndex = 0;
+    civilian.state = "walking";
+
+    new PedestrianSystem(makeLineGraph()).update(world, 0.1);
+
+    expect(world.getComponent(id, Transform)?.position.y).toBeCloseTo(0.4, 8);
+  });
+
   it("makes civilians flee from a nearby threat", () => {
     const graph = makeLineGraph();
     const world = new World();
