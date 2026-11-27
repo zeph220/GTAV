@@ -5,7 +5,10 @@ import type { GeneratedCity } from "../world/world-types";
 import { DEFAULT_CITY_PEDESTRIAN_POPULATION } from "../ai/session/create-pedestrian-session";
 import { Transform } from "../gameplay/ecs/components";
 import { Civilian } from "../ai/civilian/civilian-components";
+import type { PedestrianThreat } from "../ai/systems/pedestrian-system";
 import { createPedestrianSession } from "../ai/session/create-pedestrian-session";
+
+const NO_VEHICLE_THREATS = (): readonly PedestrianThreat[] => [];
 
 const TORSO_GEOMETRY = new THREE.CapsuleGeometry(0.23, 0.62, 4, 8);
 const HEAD_GEOMETRY = new THREE.SphereGeometry(0.16, 10, 8);
@@ -31,16 +34,18 @@ interface PedestrianSceneProps {
   city: GeneratedCity;
   active?: boolean;
   population?: number;
+  getThreats?: () => readonly PedestrianThreat[];
 }
 
 export function PedestrianScene({
   city,
   active = true,
   population = DEFAULT_CITY_PEDESTRIAN_POPULATION,
+  getThreats = NO_VEHICLE_THREATS,
 }: PedestrianSceneProps) {
   const session = useMemo(
-    () => createPedestrianSession(city, { population }),
-    [city, population],
+    () => createPedestrianSession(city, { population, threats: getThreats }),
+    [city, getThreats, population],
   );
   const { invalidate } = useThree();
   const torsoRef = useRef<THREE.InstancedMesh>(null);
