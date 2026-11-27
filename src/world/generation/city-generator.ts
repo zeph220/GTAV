@@ -215,12 +215,16 @@ function districtAt(
   z: number,
   districts: readonly DistrictRegion[],
 ): DistrictId {
+  const cityMaxX = Math.max(...districts.map((district) => district.bounds.maxX));
+  const cityMaxZ = Math.max(...districts.map((district) => district.bounds.maxZ));
+  const safeX = Math.min(x, cityMaxX - Number.EPSILON * Math.abs(cityMaxX));
+  const safeZ = Math.min(z, cityMaxZ - Number.EPSILON * Math.abs(cityMaxZ));
   const district = districts.find(({ bounds: area }) =>
-    x >= area.minX &&
-    x < area.maxX &&
-    z >= area.minZ &&
-    z < area.maxZ
-  ) ?? districts[districts.length - 1];
+    safeX >= area.minX &&
+    safeX < area.maxX &&
+    safeZ >= area.minZ &&
+    safeZ < area.maxZ
+  );
 
   if (!district) throw new Error("NOVA CITY district layout is empty");
   return district.id;
