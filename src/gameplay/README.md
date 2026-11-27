@@ -43,3 +43,26 @@ Le module de rendu ne doit pas importer les détails internes de l'ECS. Il lit u
 Le repère monde utilise Y vers le haut et -Z comme direction avant initiale. Les distances sont exprimées en unités monde ; le choix de l'échelle visuelle reste du ressort de `src/world` et `src/rendering`.
 
 Les contrats communs dans `src/shared` restent rétrocompatibles. Toute évolution architecturale doit être précédée d'un ADR.
+
+## Itération 7 — ordonnanceur de simulation
+
+`GameSimulation` fournit une boucle ECS commune indépendante du rendu :
+
+- pas fixe de 60 Hz par défaut, avec accumulateur pour absorber les variations de fréquence d'affichage ;
+- priorités explicites et ordre stable à priorité égale ;
+- delta maximal par frame et nombre maximal de sous-étapes pour éviter les spirales de rattrapage ;
+- pause, désinscription des systèmes, remise à zéro de l'horloge et snapshot de diagnostic ;
+- protection contre les appels réentrants et validation des options.
+
+Exemple :
+
+```ts
+const simulation = new GameSimulation(world);
+simulation.registerSystem({ id: "movement", system: movementSystem, priority: 10 });
+simulation.registerSystem({ id: "combat", system: combatSystem, priority: 20 });
+
+// Dans la boucle de rendu, transmettre le delta en secondes.
+simulation.advance(frameDeltaSeconds);
+```
+
+Le mouvement s'exécute ici avant le combat. Les systèmes ne dépendent pas du renderer et continuent à être testables avec un `World` en mémoire. Voir `docs/adr/0003-deterministic-simulation-loop.md` pour les choix de conception.
