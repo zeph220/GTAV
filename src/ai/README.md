@@ -44,7 +44,7 @@ coupler les modules.
 ## Session urbaine intégrée
 
 `createPedestrianSession(city)` construit le graphe des trottoirs, crée une
-population déterministe de 42 civils (commuters, residents, visitors et
+population déterministe de 24 civils (commuters, residents, visitors et
 workers) et enregistre `PedestrianSystem` dans une boucle `GameSimulation`.
 La population peut être réglée jusqu'à 250 entités. `src/rendering/PedestrianScene`
 affiche les corps, têtes, bras et jambes au moyen de maillages instanciés ;
