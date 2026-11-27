@@ -21,6 +21,7 @@ describe("createVehicleSession", () => {
     const player = session.world.getComponent(session.playerVehicleId, Transform)!;
     const trafficId = session.trafficVehicleIds[0]!;
     const traffic = session.world.getComponent(trafficId, Transform)!;
+    const trafficStart = { x: traffic.position.x, z: traffic.position.z };
     expect(player.position.x).toBeCloseTo(40, 8);
     expect(player.position.z).toBeCloseTo(0, 8);
     expect(traffic.position.x).toBeCloseTo(-80, 8);
@@ -34,8 +35,8 @@ describe("createVehicleSession", () => {
     const trafficDynamics = session.world.getComponent(trafficId, VehicleDynamics)!;
     expect(trafficDynamics.speedMps).toBeGreaterThan(0);
     expect(Math.hypot(
-      trafficAfter.position.x - traffic.position.x,
-      trafficAfter.position.z - traffic.position.z,
+      trafficAfter.position.x - trafficStart.x,
+      trafficAfter.position.z - trafficStart.z,
     )).toBeGreaterThan(1);
   });
 });
