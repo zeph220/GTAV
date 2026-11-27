@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import type { GeneratedCity } from "../world/world-types";
@@ -52,11 +52,24 @@ export function PedestrianScene({
   const legDummy = useMemo(() => new THREE.Object3D(), []);
   const armDummy = useMemo(() => new THREE.Object3D(), []);
   const color = useMemo(() => new THREE.Color(), []);
+  const tickAccumulator = useRef(0);
+  const count = session.pedestrianIds.length;
+
+  useEffect(() => {
+    if (!active || count === 0) return;
+    invalidate();
+    const intervalId = window.setInterval(invalidate, 50);
+    return () => window.clearInterval(intervalId);
+  }, [active, count, invalidate]);
 
   useFrame((_, delta) => {
-    if (!active || session.pedestrianIds.length === 0) return;
+    if (!active || count === 0) return;
+    tickAccumulator.current += Math.min(delta, 0.1);
+    if (tickAccumulator.current < 0.05) return;
+    const simulationDelta = tickAccumulator.current;
+    tickAccumulator.current = 0;
 
-    session.simulation.advance(delta);
+    session.simulation.advance(simulationDelta);
     const stepTime = session.simulation.getSnapshot().totalSteps / 60;
 
     for (let index = 0; index < session.pedestrianIds.length; index += 1) {
@@ -128,10 +141,12 @@ export function PedestrianScene({
       armRef.current.instanceMatrix.needsUpdate = true;
       if (armRef.current.instanceColor) armRef.current.instanceColor.needsUpdate = true;
     }
-    invalidate();
+    torsoRef.current?.computeBoundingSphere();
+    headRef.current?.computeBoundingSphere();
+    legRef.current?.computeBoundingSphere();
+    armRef.current?.computeBoundingSphere();
   });
 
-  const count = session.pedestrianIds.length;
   if (count === 0) return null;
 
   return (
