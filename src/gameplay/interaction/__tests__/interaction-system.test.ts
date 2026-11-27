@@ -32,9 +32,10 @@ describe("InteractionSystem", () => {
     const world = new World();
     const player = makePlayer(world);
     const first = makeTarget(world, "first", 1, { id: "first", label: "First", priority: 2 });
-    makeTarget(world, "higher", 2, { id: "higher", label: "Higher", priority: 3 });
+    const higher = makeTarget(world, "higher", 2, { id: "higher", label: "Higher", priority: 3 });
     const system = new InteractionSystem();
     expect(system.getPrompt(world, player)?.interactableId).toBe("higher");
+    world.getComponent(higher, Interactable)!.enabled = false;
     const tied = makeTarget(world, "tie", 1, { id: "tie", label: "Tie", priority: 2 });
     expect(system.getPrompt(world, player)?.targetId).toBe(first);
     expect(tied).toBeGreaterThan(first);
