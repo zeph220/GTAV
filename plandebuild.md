@@ -371,7 +371,7 @@ Créer :
 trafic avancé
 accidents
 réactions environnementales
-## Reprise des modules monde, rendu, véhicules et piétons — itérations 10 à 13
+## Reprise des modules monde, rendu, véhicules et piétons — itérations 10 à 14
 
 Les fondations des modules monde/rendu/véhicules ont été reprises sur `main` afin de poursuivre l'intégration technique. Cette reprise conserve les frontières de modules et n'autorise pas de modification non documentée de `src/shared`.
 
@@ -379,6 +379,7 @@ Les fondations des modules monde/rendu/véhicules ont été reprises sur `main` 
 - **Itération 11 — Rendu :** terminée. Scène React Three Fiber raccordée au monde, terrain coloré, chaussées et marquages, bâtiments et vitrages instanciés, arbres, éclairage, ombres, brouillard, commandes orbitales et rendu à la demande.
 - **Itération 12 — Véhicules :** terminée. Composants ECS dédiés, modèle de conduite arcade à masse et forces (accélération, freinage, marche arrière, traînée et braquage), calcul d'itinéraires Dijkstra sur les routes générées, suivi autonome de waypoints, une voiture jouable au clavier et un véhicule de circulation autonome, caméra de poursuite et HUD de vitesse. Les collisions, suspensions, glissement latéral, dégâts, trafic dense et stationnement dynamique restent hors périmètre.
 - **Itération 13 — Piétons :** terminée. Génération des trottoirs à partir des routes, connexions aux angles d'intersection, errance et fuite limitées au graphe piéton, population déterministe de 24 civils, silhouettes animées en maillages instanciés et affichage dans les statistiques du monde.
+- **Itération 14 — Interaction véhicules-piétons :** terminée. La scène de conduite publie les positions de la voiture du joueur et du trafic autonome environ toutes les 120 ms ; la session piéton consomme ces menaces en temps réel ; les civils proches déclenchent une fuite vers un chemin praticable sur les trottoirs ; les menaces sont supprimées à l'arrêt ou en pause. Les collisions physiques et les dégâts restent hors périmètre.
 
 Chaque étape doit respecter la définition de terminé ci-dessous : lint, typage, tests unitaires, tests navigateur, build et documentation.
 
