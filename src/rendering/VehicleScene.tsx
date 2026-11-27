@@ -60,7 +60,7 @@ export function VehicleScene({ city, active, onSpeedChange }: VehicleSceneProps)
       if (
         event.target instanceof HTMLElement &&
         (event.target.isContentEditable ||
-          ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(event.target.tagName))
+          ["INPUT", "TEXTAREA", "SELECT"].includes(event.target.tagName))
       ) return;
       event.preventDefault();
       pressed.add(event.code);
