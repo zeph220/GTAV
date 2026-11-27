@@ -35,8 +35,10 @@ export function CityCameraControls() {
         event.clientY >= bounds.top &&
         event.clientY <= bounds.bottom;
       const eventTarget = event.target;
-      const targetsCanvas = eventTarget === canvas || eventTarget === eventSurface;
-      if (!withinCanvas || !targetsCanvas) return;
+      const isUiControl =
+        eventTarget instanceof Element &&
+        Boolean(eventTarget.closest(".game-panel, .game-header, .district-rail, .game-footer, button"));
+      if (!withinCanvas || isUiControl) return;
       if (event.button !== 0 && event.button !== 2) return;
       activePointerId = event.pointerId;
       activeButton = event.button;
