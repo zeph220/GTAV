@@ -74,8 +74,8 @@ function App() {
         <h2>Une métropole à explorer.</h2>
         <p className="panel-copy">
           Huit quartiers, un réseau routier continu et des centaines de bâtiments.
-          Le paysage, les façades et la végétation sont assemblés en temps réel
-          à partir du plan de ville.
+          Prenez le volant pour parcourir la ville pendant que la circulation
+          autonome suit les itinéraires du réseau routier.
         </p>
         {phase === "menu" ? (
           <button className="primary-button" onClick={() => setPhase("playing")}>
