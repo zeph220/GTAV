@@ -14,7 +14,7 @@ describe("NOVA CITY pedestrian integration", () => {
     });
     const navigation = createCityPedestrianNavigation(city);
 
-    expect(navigation.graph.size).toBeGreaterThan(city.roadNetwork.nodes.length);
+    expect(navigation.graph.size).toBeGreaterThan(city.roadNetwork.nodes.length * 4);
     expect(navigation.spawnPoints).toHaveLength(navigation.graph.size);
     expect(navigation.spawnPoints.every((point) =>
       Number.isFinite(point.x) && Number.isFinite(point.y) && Number.isFinite(point.z)
