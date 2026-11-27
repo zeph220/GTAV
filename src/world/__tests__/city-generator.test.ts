@@ -150,7 +150,7 @@ describe("NOVA CITY procedural world", () => {
   it("rejects invalid terrain dimensions and excessive meshes", () => {
     const bounds = { minX: -10, maxX: 10, minZ: -10, maxZ: 10 };
     expect(() => generateTerrainMesh(bounds, 0, 2)).toThrow("segmentsX");
-    expect(() => generateTerrainMesh(bounds, 257, 257)).toThrow("safety limit");
+    expect(() => generateTerrainMesh(bounds, 512, 256)).toThrow("safety limit");
     expect(() => generateTerrainMesh({ ...bounds, maxX: -10 }, 2, 2)).toThrow("positive dimensions");
     expect(() => sampleTerrainHeight(Number.POSITIVE_INFINITY, 0)).toThrow("finite");
   });
