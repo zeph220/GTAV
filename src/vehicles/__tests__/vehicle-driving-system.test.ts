@@ -59,6 +59,32 @@ describe("VehicleDrivingSystem", () => {
     expect(transform.position.z).toBeGreaterThan(0);
   });
 
+  it("applies aerodynamic drag while the vehicle is coasting in reverse", () => {
+    const world = new World();
+    const entityId = createVehicle(world, {
+      handling: {
+        rollingResistanceNewtons: 0.01,
+        aerodynamicDragCoefficient: 20,
+        maxReverseSpeedMps: 20,
+      },
+    });
+    const system = new VehicleDrivingSystem();
+    setVehicleControls(world, entityId, { throttle: -1 });
+    step(system, world, 180);
+    const speedBeforeCoasting = Math.abs(
+      world.getComponent(entityId, VehicleDynamics)!.speedMps,
+    );
+
+    setVehicleControls(world, entityId, { throttle: 0 });
+    step(system, world, 60);
+    const speedAfterCoasting = Math.abs(
+      world.getComponent(entityId, VehicleDynamics)!.speedMps,
+    );
+
+    expect(speedBeforeCoasting).toBeGreaterThan(5);
+    expect(speedAfterCoasting).toBeLessThan(speedBeforeCoasting);
+  });
+
   it("steers with a speed-sensitive bicycle model", () => {
     const { world, entityId, system } = createTestVehicle();
     setVehicleControls(world, entityId, { throttle: 0.8, steering: 1 });
