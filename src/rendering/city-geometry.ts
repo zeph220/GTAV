@@ -95,8 +95,8 @@ export function createRoadMarkingGeometry(
     if (segment.kind !== kind) continue;
     const from = nodes.get(segment.fromNodeId)!;
     const to = nodes.get(segment.toNodeId)!;
-    const dx = to.position.x - from.position.x;
-    const dz = to.position.z - from.position.z;
+    const dx = to.x - from.x;
+    const dz = to.z - from.z;
     const length = Math.hypot(dx, dz);
     if (length === 0) continue;
 
@@ -110,8 +110,8 @@ export function createRoadMarkingGeometry(
       for (let distance = 8; distance < length - 5; distance += dashLength + dashGap) {
         const start = distance / length;
         const end = Math.min(distance + dashLength, length - 3) / length;
-        const startPoint = interpolatePoint(from.position, to.position, start);
-        const endPoint = interpolatePoint(from.position, to.position, end);
+        const startPoint = interpolatePoint(from, to, start);
+        const endPoint = interpolatePoint(from, to, end);
         startPoint.x += perpendicularX * lateralOffset;
         startPoint.z += perpendicularZ * lateralOffset;
         endPoint.x += perpendicularX * lateralOffset;
