@@ -4,16 +4,16 @@ export type VehicleGear = "forward" | "reverse" | "neutral";
 
 export interface VehicleDynamicsComponent {
   massKg: number;
-  engineAccelerationMps2: number;
-  brakingAccelerationMps2: number;
-  handbrakeAccelerationMps2: number;
+  engineForceNewtons: number;
+  brakingForceNewtons: number;
+  handbrakeForceNewtons: number;
   maxForwardSpeedMps: number;
   maxReverseSpeedMps: number;
   wheelBaseMeters: number;
   maxSteeringAngleRadians: number;
   steeringResponse: number;
-  rollingResistanceMps2: number;
-  aerodynamicDrag: number;
+  rollingResistanceNewtons: number;
+  aerodynamicDragCoefficient: number;
   speedMps: number;
   steeringAngleRadians: number;
   gear: VehicleGear;
@@ -59,14 +59,14 @@ export interface VehicleHandling {
 
 export const DEFAULT_VEHICLE_HANDLING: Readonly<VehicleHandling> = Object.freeze({
   massKg: 1450,
-  engineAccelerationMps2: 7.2,
-  brakingAccelerationMps2: 12.5,
-  handbrakeAccelerationMps2: 19,
+  engineForceNewtons: 10440,
+  brakingForceNewtons: 18125,
+  handbrakeForceNewtons: 27550,
   maxForwardSpeedMps: 42,
   maxReverseSpeedMps: 10,
   wheelBaseMeters: 2.7,
   maxSteeringAngleRadians: 0.54,
   steeringResponse: 7.5,
-  rollingResistanceMps2: 0.38,
-  aerodynamicDrag: 0.00115,
+  rollingResistanceNewtons: 550,
+  aerodynamicDragCoefficient: 1.65,
 });
