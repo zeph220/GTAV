@@ -15,6 +15,10 @@ Le module de rendu transforme les données déterministes de `src/world` en obje
 
 Les géométries statiques sont combinées en buffers et les éléments répétés passent par des `InstancedMesh` pour réduire le nombre d'objets et d'appels de dessin. Le canvas utilise `frameloop="demand"` : la scène statique n'est redessinée que lorsqu'une interaction invalide une nouvelle image, ce qui limite le travail GPU/CPU au repos.
 
+## Véhicules
+
+`VehicleScene` rend les modèles des véhicules ECS, leurs roues, la caméra de poursuite et le HUD est géré par l'interface React. En mode conduite, les commandes clavier modifient les composants `VehicleControls`, tandis que la simulation fixe met à jour la physique et la circulation. Le module de rendu ne contient pas les règles physiques ni le calcul d'itinéraire.
+
 ## Utilisation
 
 ```tsx
@@ -31,4 +35,4 @@ const city = generateCity({ seed: "nova-city-preview" });
 
 ## Limites actuelles
 
-Le rendu est procédural et stylisé : façades et végétation sont générées par géométrie, sans bibliothèque externe d'assets. Cette itération ne comprend pas encore de textures photographiques haute résolution, de shaders météo, d'éclairage global, de LOD, de streaming ni de conduite. Ces travaux doivent rester des étapes mesurées, testées sur les navigateurs cibles.
+Le rendu est procédural et stylisé : façades et végétation sont générées par géométrie, sans bibliothèque externe d'assets. Cette itération ne comprend pas encore de textures photographiques haute résolution, de shaders météo, d'éclairage global, de LOD, de streaming ni de collisions/physique véhicule avancée. La conduite arcade et une première voiture autonome sont fournies par `src/vehicles`. Ces travaux doivent rester des étapes mesurées, testées sur les navigateurs cibles.
