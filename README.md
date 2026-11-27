@@ -50,7 +50,7 @@ npm run build
 
 ## Population piétonne
 
-La scène présente une population déterministe de 42 piétons. Ils circulent sur des cheminements dérivés des routes, se promènent et réagissent aux menaces via les systèmes IA indépendants du rendu.
+La scène présente une population déterministe de 24 piétons. Ils circulent sur des cheminements dérivés des routes, se promènent et réagissent aux menaces via les systèmes IA indépendants du rendu.
 
 ## Conduite
 
