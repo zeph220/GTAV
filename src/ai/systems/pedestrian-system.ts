@@ -5,7 +5,7 @@ import { ControlLock, Transform } from "../../gameplay/ecs/components";
 import { World } from "../../gameplay/ecs/world";
 import { Civilian } from "../civilian/civilian-components";
 import { NavGraph } from "../navigation/nav-graph";
-import { distance3, findWorldPath } from "../navigation/pathfinding";
+import { distance3 } from "../navigation/pathfinding";
 
 export interface PedestrianThreat {
   position: Vec3;
@@ -80,7 +80,7 @@ export class PedestrianSystem implements GameSystem {
       const step = Math.min(distance, civilian.walkSpeed * dt);
       position.x += (dx / distance) * step;
       position.z += (dz / distance) * step;
-      transform.rotationY = Math.atan2(dx, dz);
+      transform.rotationY = Math.atan2(dx, -dz);
     }
   }
 
@@ -95,40 +95,77 @@ export class PedestrianSystem implements GameSystem {
     return nearest;
   }
 
-  private startFleeing(position: Vec3, civilian: import("../civilian/civilian-components").CivilianComponent, threat: Vec3): void {
-    const dx = position.x - threat.x;
-    const dz = position.z - threat.z;
-    const length = Math.hypot(dx, dz) || 1;
-    const distance = Math.max(12, civilian.preferredWanderRadius * 1.5);
-    const destination = { x: position.x + dx / length * distance, y: position.y, z: position.z + dz / length * distance };
-    const path = findWorldPath(this.navigation, position, destination);
-    if (!path?.length) return;
-    civilian.state = "fleeing";
-    civilian.destination = destination;
-    civilian.path = path;
-    civilian.waypointIndex = 0;
-    civilian.waitRemaining = 0;
+  private startFleeing(
+    position: Vec3,
+    civilian: import("../civilian/civilian-components").CivilianComponent,
+    threat: Vec3,
+  ): void {
+    const start = this.navigation.nearestNode(position);
+    if (!start) return;
+
+    const currentThreatDistance = distance3(position, threat);
+    const candidates = this.navigation.nodesWithin(
+      position,
+      Math.max(12, civilian.preferredWanderRadius * 1.5),
+    )
+      .filter((node) =>
+        node.id !== start.id &&
+        distance3(node.position, threat) > currentThreatDistance + 1.5
+      )
+      .sort((a, b) =>
+        distance3(b.position, threat) - distance3(a.position, threat) ||
+        distance3(position, a.position) - distance3(position, b.position) ||
+        a.id.localeCompare(b.id)
+      );
+
+    for (const candidate of candidates) {
+      const path = this.navigation.findPath(start.id, candidate.id);
+      if (!path?.length) continue;
+      civilian.state = "fleeing";
+      civilian.destination = { ...candidate.position };
+      civilian.path = path;
+      civilian.waypointIndex = 0;
+      civilian.waitRemaining = 0;
+      return;
+    }
   }
 
-  private chooseWanderDestination(position: Vec3, civilian: import("../civilian/civilian-components").CivilianComponent): void {
-    const angle = this.random() * Math.PI * 2;
-    const radius = civilian.preferredWanderRadius * (0.35 + this.random() * 0.65);
-    const destination = {
-      x: position.x + Math.cos(angle) * radius,
-      y: position.y,
-      z: position.z + Math.sin(angle) * radius,
-    };
-    const path = findWorldPath(this.navigation, position, destination);
+  private chooseWanderDestination(
+    position: Vec3,
+    civilian: import("../civilian/civilian-components").CivilianComponent,
+  ): void {
+    const start = this.navigation.nearestNode(position);
+    const candidates = this.navigation.nodesWithin(
+      position,
+      civilian.preferredWanderRadius,
+    ).filter((node) =>
+      (!start || node.id !== start.id) &&
+      distance3(position, node.position) > this.arrivalRadius
+    );
+
     civilian.decisionTimer = this.decisionInterval;
-    if (!path?.length) {
+    if (!start || !candidates.length) {
       civilian.state = "waiting";
       civilian.waitRemaining = 1 + this.random() * 2;
       return;
     }
-    civilian.destination = destination;
-    civilian.path = path;
-    civilian.waypointIndex = 0;
-    civilian.state = "walking";
+
+    // Rotate the deterministic, distance-sorted candidate list by a seeded
+    // random offset, then take the first reachable sidewalk destination.
+    const firstCandidate = Math.floor(this.random() * candidates.length);
+    for (let offset = 0; offset < candidates.length; offset += 1) {
+      const candidate = candidates[(firstCandidate + offset) % candidates.length]!;
+      const path = this.navigation.findPath(start.id, candidate.id);
+      if (!path?.length) continue;
+      civilian.destination = { ...candidate.position };
+      civilian.path = path;
+      civilian.waypointIndex = 0;
+      civilian.state = "walking";
+      return;
+    }
+
+    civilian.state = "waiting";
+    civilian.waitRemaining = 1 + this.random() * 2;
   }
 
   private arrive(civilian: import("../civilian/civilian-components").CivilianComponent): void {
