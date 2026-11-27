@@ -14,3 +14,5 @@ export * from "./combat/equipment";
 export * from "./progression";
 export * from "./save";
 export * from "./simulation/game-simulation";
+export * from "./interaction/interactable-components";
+export * from "./interaction/interaction-system";
