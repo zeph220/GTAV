@@ -187,8 +187,8 @@ export function createStreetTreePositions(network: RoadNetwork): WorldPoint3[] {
 
   for (const segment of network.segments) {
     if (segment.kind !== "local") continue;
-    const from = nodes.get(segment.fromNodeId)!.position;
-    const to = nodes.get(segment.toNodeId)!.position;
+    const from = nodes.get(segment.fromNodeId)!;
+    const to = nodes.get(segment.toNodeId)!;
     const dx = to.x - from.x;
     const dz = to.z - from.z;
     const length = Math.hypot(dx, dz);
@@ -250,8 +250,8 @@ class RibbonBuilder {
   }
 }
 
-function indexRoadNodes(network: RoadNetwork): Map<string, { position: WorldPoint3 }> {
-  return new Map(network.nodes.map((node) => [node.id, node]));
+function indexRoadNodes(network: RoadNetwork): Map<string, WorldPoint3> {
+  return new Map(network.nodes.map((node) => [node.id, node.position]));
 }
 
 function interpolatePoint(from: WorldPoint3, to: WorldPoint3, amount: number): WorldPoint3 {
