@@ -28,11 +28,15 @@ export function CityCameraControls() {
     };
 
     const handlePointerDown = (event: PointerEvent) => {
+      const bounds = canvas.getBoundingClientRect();
+      const withinCanvas =
+        event.clientX >= bounds.left &&
+        event.clientX <= bounds.right &&
+        event.clientY >= bounds.top &&
+        event.clientY <= bounds.bottom;
       const eventTarget = event.target;
-      if (
-        !(eventTarget instanceof Node) ||
-        !(eventTarget === eventSurface || eventSurface.contains(eventTarget))
-      ) return;
+      const targetsCanvas = eventTarget === canvas || eventTarget === eventSurface;
+      if (!withinCanvas || !targetsCanvas) return;
       if (event.button !== 0 && event.button !== 2) return;
       activePointerId = event.pointerId;
       activeButton = event.button;
@@ -95,21 +99,21 @@ export function CityCameraControls() {
     canvas.style.cursor = "grab";
     eventSurface.style.cursor = "grab";
     updateCamera();
-    window.addEventListener("pointerdown", handlePointerDown);
-    window.addEventListener("pointermove", handlePointerMove);
-    window.addEventListener("pointerup", releasePointer);
-    window.addEventListener("pointercancel", releasePointer);
-    window.addEventListener("mouseup", releaseMouse);
+    window.addEventListener("pointerdown", handlePointerDown, true);
+    window.addEventListener("pointermove", handlePointerMove, true);
+    window.addEventListener("pointerup", releasePointer, true);
+    window.addEventListener("pointercancel", releasePointer, true);
+    window.addEventListener("mouseup", releaseMouse, true);
     window.addEventListener("blur", releaseMouse);
     eventSurface.addEventListener("wheel", handleWheel, { passive: false });
     eventSurface.addEventListener("contextmenu", preventContextMenu);
 
     return () => {
-      window.removeEventListener("pointerdown", handlePointerDown);
-      window.removeEventListener("pointermove", handlePointerMove);
-      window.removeEventListener("pointerup", releasePointer);
-      window.removeEventListener("pointercancel", releasePointer);
-      window.removeEventListener("mouseup", releaseMouse);
+      window.removeEventListener("pointerdown", handlePointerDown, true);
+      window.removeEventListener("pointermove", handlePointerMove, true);
+      window.removeEventListener("pointerup", releasePointer, true);
+      window.removeEventListener("pointercancel", releasePointer, true);
+      window.removeEventListener("mouseup", releaseMouse, true);
       window.removeEventListener("blur", releaseMouse);
       eventSurface.removeEventListener("wheel", handleWheel);
       eventSurface.removeEventListener("contextmenu", preventContextMenu);
