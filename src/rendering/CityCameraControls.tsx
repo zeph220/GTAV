@@ -63,13 +63,22 @@ export function CityCameraControls() {
       updateCamera();
     };
 
-    const releasePointer = (event: PointerEvent) => {
-      if (activePointerId !== event.pointerId) return;
+    const resetDrag = () => {
+      if (activePointerId === null) return;
       activePointerId = null;
       activeButton = null;
       canvas.style.cursor = "grab";
       eventSurface.style.cursor = "grab";
     };
+
+    const releasePointer = (event: PointerEvent) => {
+      if (activePointerId !== event.pointerId) return;
+      resetDrag();
+    };
+
+    // Mouseup is a fallback for browsers that omit pointerup on secondary
+    // button transitions; blur also prevents a stuck drag when focus is lost.
+    const releaseMouse = () => resetDrag();
 
     const handleWheel = (event: WheelEvent) => {
       event.preventDefault();
@@ -90,6 +99,8 @@ export function CityCameraControls() {
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerup", releasePointer);
     window.addEventListener("pointercancel", releasePointer);
+    window.addEventListener("mouseup", releaseMouse);
+    window.addEventListener("blur", releaseMouse);
     canvas.addEventListener("wheel", handleWheel, { passive: false });
     canvas.addEventListener("contextmenu", preventContextMenu);
 
@@ -98,6 +109,8 @@ export function CityCameraControls() {
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", releasePointer);
       window.removeEventListener("pointercancel", releasePointer);
+      window.removeEventListener("mouseup", releaseMouse);
+      window.removeEventListener("blur", releaseMouse);
       canvas.removeEventListener("wheel", handleWheel);
       canvas.removeEventListener("contextmenu", preventContextMenu);
       canvas.style.cursor = "";
