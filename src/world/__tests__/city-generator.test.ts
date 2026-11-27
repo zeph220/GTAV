@@ -18,12 +18,30 @@ describe("NOVA CITY procedural world", () => {
     const nodeIds = new Set(city.roadNetwork.nodes.map((node) => node.id));
     const segmentIds = new Set(city.roadNetwork.segments.map((segment) => segment.id));
     expect(segmentIds.size).toBe(city.roadNetwork.segments.length);
+    const adjacency = new Map<string, string[]>();
+    for (const nodeId of nodeIds) adjacency.set(nodeId, []);
     for (const segment of city.roadNetwork.segments) {
       expect(nodeIds.has(segment.fromNodeId)).toBe(true);
       expect(nodeIds.has(segment.toNodeId)).toBe(true);
       expect(segment.width).toBeGreaterThan(0);
       expect(["arterial", "local"]).toContain(segment.kind);
+      adjacency.get(segment.fromNodeId)!.push(segment.toNodeId);
+      adjacency.get(segment.toNodeId)!.push(segment.fromNodeId);
     }
+
+    const visited = new Set<string>();
+    const pending = [city.roadNetwork.nodes[0]!.id];
+    while (pending.length > 0) {
+      const current = pending.pop()!;
+      if (visited.has(current)) continue;
+      visited.add(current);
+      pending.push(...adjacency.get(current)!);
+    }
+    expect(visited.size).toBe(nodeIds.size);
+    expect(city.roadNetwork.segments.find((segment) => segment.id === "road-v-16-0")?.districtId)
+      .toBe("financial-district");
+    expect(city.roadNetwork.segments.find((segment) => segment.id === "road-v-16-7")?.districtId)
+      .toBe("residential-hills");
 
     const nodes = new Map(city.roadNetwork.nodes.map((node) => [node.id, node]));
     for (const segment of city.roadNetwork.segments) {
@@ -66,6 +84,9 @@ describe("NOVA CITY procedural world", () => {
     const districts = new Map(city.districts.map((district) => [district.id, district]));
 
     expect(city.buildings.length).toBeGreaterThan(100);
+    for (const district of city.districts) {
+      expect(city.buildings.some((building) => building.districtId === district.id)).toBe(true);
+    }
     for (const building of city.buildings) {
       const block = blocks.get(building.blockId)!;
       const district = districts.get(building.districtId)!;
@@ -97,6 +118,11 @@ describe("NOVA CITY procedural world", () => {
     expect(terrain.vertices.every((point) =>
       Number.isFinite(point.x) && Number.isFinite(point.y) && Number.isFinite(point.z)
     )).toBe(true);
+    const a = terrain.vertices[terrain.indices[0]!]!;
+    const b = terrain.vertices[terrain.indices[1]!]!;
+    const c = terrain.vertices[terrain.indices[2]!]!;
+    const normalY = (b.z - a.z) * (c.x - a.x) - (b.x - a.x) * (c.z - a.z);
+    expect(normalY).toBeGreaterThan(0);
     expect(Number.isFinite(sampleTerrainHeight(0, 0, city.seed))).toBe(true);
     expect(Math.abs(
       sampleTerrainHeight(100, 100, city.seed) -
