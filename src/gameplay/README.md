@@ -66,3 +66,24 @@ simulation.advance(frameDeltaSeconds);
 ```
 
 Le mouvement s'exécute ici avant le combat. Les systèmes ne dépendent pas du renderer et continuent à être testables avec un `World` en mémoire. Voir `docs/adr/0003-deterministic-simulation-loop.md` pour les choix de conception.
+
+## Itération 8 — interactions contextuelles
+
+Le module `interaction` fournit un mécanisme réutilisable pour les portes, contacts, commerces, points de mission et objets :
+
+- `addInteractable` valide et ajoute un composant avec identifiant stable, libellé, portée, priorité, cooldown et usages optionnels ;
+- `InteractionSystem.getPrompt` renvoie la meilleure cible à proximité, sélectionnée de façon déterministe (priorité, distance, identifiant d'entité) ;
+- `requestInteraction(playerId)` met en file une demande ; `update` vérifie à nouveau la cible et déclenche le callback uniquement si l'interaction reste possible ;
+- les interactables à usages limités sont désactivés après leur dernière utilisation.
+
+Exemple de liaison à une mission :
+
+```ts
+const interactions = new InteractionSystem({
+  onInteracted: ({ playerId, interactableId }) => {
+    missions.reportEvent(world, playerId, { type: "interact", targetId: interactableId });
+  },
+});
+```
+
+Le système expose des données de prompt sans imposer de présentation graphique. Voir `docs/adr/0004-contextual-interactions.md`.
