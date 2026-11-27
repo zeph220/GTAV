@@ -38,14 +38,18 @@ npm run build
 
 `npm run build` vérifie les types, compile l'API et construit le client Vite. Les tests utilisent Vitest ; le workflow GitHub Actions exécute les mêmes vérifications à chaque push et pull request.
 
-## Architecture de démarrage
+## Architecture
 
-- `src/main.tsx` : point d'entrée React.
+- `src/main.tsx` : point d'entrée React et composition de la scène.
 - `src/app` : état d'interface avec Zustand.
 - `src/gameplay`, `src/ai`, `src/missions` : logique de jeu indépendante du rendu.
 - `src/server` : API Fastify et persistance de développement SQLite.
 - `src/world` : génération déterministe des huit quartiers, îlots, routes, bâtiments et terrain.
-- `src/rendering` : scène urbaine React Three Fiber, façades instanciées, végétation, éclairage, ombres et caméra orbitale.
-- `src/vehicles` : prochaine étape de réalisation (itération 12), avec consommation du graphe routier.
+- `src/rendering` : scène urbaine React Three Fiber, façades instanciées, végétation, éclairage, ombres, caméra orbitale et modèles de véhicules.
+- `src/vehicles` : composants ECS de conduite, physique arcade à forces et masse, itinéraires routiers et première circulation autonome.
+
+## Conduite
+
+Cliquer sur **Prendre le volant**, puis utiliser W/S ou les flèches pour accélérer/reculer, A/D ou les flèches pour tourner, Espace pour freiner et Maj pour le frein à main. La vitesse est affichée dans le HUD.
 
 Les routes de sauvegarde de l'API sont destinées au développement local. Une mise en production devra ajouter une authentification et des règles d'autorisation par joueur avant toute exposition réseau.
