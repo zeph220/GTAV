@@ -112,9 +112,9 @@ describe("procedural city render geometry", () => {
   it("places a pair of roadside trees beside a local street", () => {
     const positions = createStreetTreePositions(roadNetwork);
 
-    expect(positions).toHaveLength(1);
-    expect(positions[0]!.x).toBeCloseTo(40, 8);
-    expect(Math.abs(positions[0]!.z)).toBeCloseTo(6.1, 8);
-    expect(positions[0]!.y).toBeCloseTo(0.34, 8);
+    expect(positions).toHaveLength(2);
+    expect(positions.every((position) => position.x === 40)).toBe(true);
+    expect(positions.every((position) => Math.abs(position.z) === 6.1)).toBe(true);
+    expect(positions.every((position) => position.y === 0.34)).toBe(true);
   });
 });
