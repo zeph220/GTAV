@@ -26,10 +26,22 @@ export function createVehicleSession(city: GeneratedCity): VehicleSession {
   const trafficRoute = findRoadRoute(
     city.roadNetwork,
     [
-      { x: -80, z: 80 },
-      { x: 80, z: 80 },
-      { x: 80, z: -80 },
-      { x: -80, z: -80 },
+      {
+        x: cityCenter(city).x - minimumRoadSpacing(city.roadNetwork.nodes.map((node) => node.position.x)),
+        z: cityCenter(city).z + minimumRoadSpacing(city.roadNetwork.nodes.map((node) => node.position.z)),
+      },
+      {
+        x: cityCenter(city).x + minimumRoadSpacing(city.roadNetwork.nodes.map((node) => node.position.x)),
+        z: cityCenter(city).z + minimumRoadSpacing(city.roadNetwork.nodes.map((node) => node.position.z)),
+      },
+      {
+        x: cityCenter(city).x + minimumRoadSpacing(city.roadNetwork.nodes.map((node) => node.position.x)),
+        z: cityCenter(city).z - minimumRoadSpacing(city.roadNetwork.nodes.map((node) => node.position.z)),
+      },
+      {
+        x: cityCenter(city).x - minimumRoadSpacing(city.roadNetwork.nodes.map((node) => node.position.x)),
+        z: cityCenter(city).z - minimumRoadSpacing(city.roadNetwork.nodes.map((node) => node.position.z)),
+      },
     ],
     true,
   );
@@ -130,4 +142,24 @@ function angularDistance(from: number, to: number): number {
   const tau = Math.PI * 2;
   const difference = ((from - to + Math.PI) % tau + tau) % tau - Math.PI;
   return Math.abs(difference);
+}
+
+function cityCenter(city: GeneratedCity): { x: number; z: number } {
+  return {
+    x: (city.bounds.minX + city.bounds.maxX) / 2,
+    z: (city.bounds.minZ + city.bounds.maxZ) / 2,
+  };
+}
+
+function minimumRoadSpacing(values: readonly number[]): number {
+  const coordinates = [...new Set(values)].sort((a, b) => a - b);
+  let minimum = Number.POSITIVE_INFINITY;
+  for (let index = 1; index < coordinates.length; index += 1) {
+    const spacing = coordinates[index]! - coordinates[index - 1]!;
+    if (spacing > 0) minimum = Math.min(minimum, spacing);
+  }
+  if (!Number.isFinite(minimum)) {
+    throw new Error("Vehicle session requires a regular road grid with at least two nodes per axis");
+  }
+  return minimum;
 }
