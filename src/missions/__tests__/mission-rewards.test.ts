@@ -4,6 +4,7 @@ import { World } from "../../gameplay/ecs/world";
 import { ProgressionSystem } from "../../gameplay/progression/progression-system";
 import type { MissionDefinition, MissionUpdate } from "../mission-types";
 import { MissionRewardService } from "../mission-rewards";
+import { MissionSystem } from "../mission-system";
 
 const definition: MissionDefinition = {
   id: "repair-delivery",
@@ -103,4 +104,22 @@ describe("mission reward service", () => {
       items: [{ itemId: "", requested: 3, awarded: 0, remaining: 3 }],
     });
   });
+
+  it("settles rewards through the real mission completion callback", () => {
+    const world = new World();
+    const playerId = world.createEntity();
+    world.addComponent(playerId, Inventory, { capacity: 2, slots: [] });
+    const progression = new ProgressionSystem();
+    progression.initialize(world, playerId);
+    const rewards = new MissionRewardService({ progression });
+    const missions = new MissionSystem([definition], {
+      onCompleted: (update, completedDefinition) => rewards.apply(world, update, completedDefinition),
+    });
+    missions.initializeJournal(world, playerId);
+    expect(missions.startMission(world, playerId, definition.id)).toBe(true);
+    expect(missions.reportEvent(world, playerId, { type: "interact", targetId: "workshop" })).toBe(1);
+    expect(progression.getSnapshot(world, playerId)?.experience).toBe(125);
+    expect(world.getComponent(playerId, Inventory)?.slots).toEqual([{ itemId: "repair-kit", quantity: 2 }]);
+  });
+
 });
