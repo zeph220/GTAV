@@ -78,8 +78,10 @@ export class PedestrianSystem implements GameSystem {
       }
 
       const step = Math.min(distance, civilian.walkSpeed * dt);
-      position.x += (dx / distance) * step;
-      position.z += (dz / distance) * step;
+      const travelFraction = step / distance;
+      position.x += dx * travelFraction;
+      position.y += (waypoint.y - position.y) * travelFraction;
+      position.z += dz * travelFraction;
       transform.rotationY = Math.atan2(dx, -dz);
     }
   }
