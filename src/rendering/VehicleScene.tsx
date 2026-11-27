@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { forwardRef, useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import type { GeneratedCity } from "../world/world-types";
@@ -268,8 +268,6 @@ const rimMaterial = new THREE.MeshStandardMaterial({
   roughness: 0.32,
   metalness: 0.78,
 });
-
-import { forwardRef } from "react";
 
 const Wheel = forwardRef<THREE.Group, { position: [number, number, number] }>(
   function Wheel({ position }, ref) {
