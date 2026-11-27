@@ -62,17 +62,19 @@ function App() {
         </div>
       </header>
 
-      <aside className="district-rail" aria-label="Quartiers de NOVA CITY">
-        <p className="rail-heading">LES TERRITOIRES</p>
-        <ol>
-          {city.districts.map((district, index) => (
-            <li key={district.id}>
-              <span className="district-index">{String(index + 1).padStart(2, "0")}</span>
-              <span>{district.name}</span>
-            </li>
-          ))}
-        </ol>
-      </aside>
+      {phase !== "playing" ? (
+        <aside className="district-rail" aria-label="Quartiers de NOVA CITY">
+          <p className="rail-heading">LES TERRITOIRES</p>
+          <ol>
+            {city.districts.map((district, index) => (
+              <li key={district.id}>
+                <span className="district-index">{String(index + 1).padStart(2, "0")}</span>
+                <span>{district.name}</span>
+              </li>
+            ))}
+          </ol>
+        </aside>
+      ) : null}
 
       {phase === "menu" ? (
         <section className="game-panel" aria-label="Aperçu de NOVA CITY">
@@ -106,7 +108,11 @@ function App() {
 
       <footer className="game-footer">
         <span>NOVA CITY / VISUAL BUILD 0.11</span>
-        <span>DRAG / ORBIT&nbsp; · &nbsp;WHEEL / ZOOM&nbsp; · &nbsp;RIGHT DRAG / PAN</span>
+        <span>
+          {phase === "playing"
+            ? "W/S ACCÉLÉRER / RECULER&nbsp; · &nbsp;A/D TOURNER&nbsp; · &nbsp;ESPACE FREIN"
+            : "DRAG / ORBIT&nbsp; · &nbsp;WHEEL / ZOOM&nbsp; · &nbsp;RIGHT DRAG / PAN"}
+        </span>
       </footer>
     </main>
   );
