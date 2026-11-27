@@ -9,6 +9,8 @@ import {
 import { CivilianSpawner } from "../spawning/civilian-spawner";
 import { PedestrianSystem } from "../systems/pedestrian-system";
 
+export const DEFAULT_CITY_PEDESTRIAN_POPULATION = 42;
+
 const ARCHETYPES = ["commuter", "resident", "visitor", "worker"] as const;
 
 export interface PedestrianSessionOptions {
@@ -28,7 +30,7 @@ export function createPedestrianSession(
   city: GeneratedCity,
   options: PedestrianSessionOptions = {},
 ): PedestrianSession {
-  const population = options.population ?? 42;
+  const population = options.population ?? DEFAULT_CITY_PEDESTRIAN_POPULATION;
   if (!Number.isInteger(population) || population < 0 || population > 250) {
     throw new Error("Pedestrian population must be an integer between 0 and 250");
   }
