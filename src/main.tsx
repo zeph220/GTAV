@@ -49,6 +49,11 @@ function App() {
           <div className="phase-pill" aria-live="polite">
             {phase === "menu" ? "Aperçu prêt" : phase === "playing" ? "En visite" : "En pause"}
           </div>
+          {phase !== "menu" ? (
+            <button className="pause-button" onClick={togglePause}>
+              {phase === "playing" ? "Mettre en pause" : "Reprendre"}
+            </button>
+          ) : null}
           <div className="world-metrics">
             <span>{city.districts.length} QUARTIERS</span>
             <span>{city.roadNetwork.segments.length} ROUTES</span>
@@ -69,30 +74,26 @@ function App() {
         </ol>
       </aside>
 
-      <section className="game-panel" aria-label="Aperçu de NOVA CITY">
-        <p className="panel-kicker">VUE AÉRIENNE / GÉNÉRATION PROCÉDURALE</p>
-        <h2>Une métropole à explorer.</h2>
-        <p className="panel-copy">
-          Huit quartiers, un réseau routier continu et des centaines de bâtiments.
-          Prenez le volant pour parcourir la ville pendant que la circulation
-          autonome suit les itinéraires du réseau routier.
-        </p>
-        {phase === "menu" ? (
+      {phase === "menu" ? (
+        <section className="game-panel" aria-label="Aperçu de NOVA CITY">
+          <p className="panel-kicker">VUE AÉRIENNE / GÉNÉRATION PROCÉDURALE</p>
+          <h2>Une métropole à explorer.</h2>
+          <p className="panel-copy">
+            Huit quartiers, un réseau routier continu et des centaines de bâtiments.
+            Prenez le volant pour parcourir la ville pendant que la circulation
+            autonome suit les itinéraires du réseau routier.
+          </p>
           <button className="primary-button" onClick={() => setPhase("playing")}>
             Prendre le volant <span aria-hidden="true">↗</span>
           </button>
-        ) : (
-          <button className="primary-button" onClick={togglePause}>
-            {phase === "playing" ? "Mettre en pause" : "Reprendre"}
-          </button>
-        )}
-        <div className="panel-footnote">
-          <span className="live-dot" />
-          SCÈNE 3D ACTIVE
-          <span className="footnote-divider">/</span>
-          VÉHICULES ET TRAFIC
-        </div>
-      </section>
+          <div className="panel-footnote">
+            <span className="live-dot" />
+            SCÈNE 3D ACTIVE
+            <span className="footnote-divider">/</span>
+            VÉHICULES ET TRAFIC
+          </div>
+        </section>
+      ) : null}
 
       {phase === "playing" ? (
         <aside className="driving-hud" aria-label="Télémétrie du véhicule">
