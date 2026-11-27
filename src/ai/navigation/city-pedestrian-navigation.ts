@@ -8,6 +8,8 @@ export interface CityPedestrianNavigationOptions {
   sidewalkOffset?: number;
   /** Height offset above sampled terrain to avoid z-fighting with surfaces. */
   verticalOffset?: number;
+  /** Maximum distance between consecutive navigation nodes on a sidewalk. */
+  waypointSpacingMeters?: number;
 }
 
 export interface CityPedestrianNavigation {
@@ -37,11 +39,15 @@ export function createCityPedestrianNavigation(
 ): CityPedestrianNavigation {
   const sidewalkOffset = options.sidewalkOffset ?? 2.2;
   const verticalOffset = options.verticalOffset ?? 0.08;
+  const waypointSpacingMeters = options.waypointSpacingMeters ?? 14;
   if (!Number.isFinite(sidewalkOffset) || sidewalkOffset <= 0) {
     throw new Error("Sidewalk offset must be positive and finite");
   }
   if (!Number.isFinite(verticalOffset) || verticalOffset < 0) {
     throw new Error("Sidewalk vertical offset must be finite and non-negative");
+  }
+  if (!Number.isFinite(waypointSpacingMeters) || waypointSpacingMeters < 2) {
+    throw new Error("Sidewalk waypoint spacing must be finite and at least 2 meters");
   }
 
   const graph = new NavGraph();
@@ -95,20 +101,30 @@ export function createCityPedestrianNavigation(
     const offset = segment.width / 2 + sidewalkOffset;
     const orientation = Math.abs(dx) >= Math.abs(dz) ? "horizontal" : "vertical";
 
+    const divisions = Math.max(1, Math.ceil(length / waypointSpacingMeters));
     for (const side of [-1, 1]) {
       const shiftX = normalX * offset * side;
       const shiftZ = normalZ * offset * side;
-      const startId = ensureSidewalkPoint(
-        from.position.x + shiftX,
-        from.position.z + shiftZ,
-      );
-      const endId = ensureSidewalkPoint(
-        to.position.x + shiftX,
-        to.position.z + shiftZ,
-      );
-      if (startId !== endId) graph.addEdge({ from: startId, to: endId });
-      addEndpoint(from.id, startId, orientation);
-      addEndpoint(to.id, endId, orientation);
+      const segmentNodeIds: string[] = [];
+
+      for (let index = 0; index <= divisions; index += 1) {
+        const amount = index / divisions;
+        segmentNodeIds.push(ensureSidewalkPoint(
+          from.position.x + dx * amount + shiftX,
+          from.position.z + dz * amount + shiftZ,
+        ));
+      }
+
+      for (let index = 1; index < segmentNodeIds.length; index += 1) {
+        const previousId = segmentNodeIds[index - 1]!;
+        const currentId = segmentNodeIds[index]!;
+        if (previousId !== currentId) {
+          graph.addEdge({ from: previousId, to: currentId });
+        }
+      }
+
+      addEndpoint(from.id, segmentNodeIds[0]!, orientation);
+      addEndpoint(to.id, segmentNodeIds[segmentNodeIds.length - 1]!, orientation);
     }
   }
 
