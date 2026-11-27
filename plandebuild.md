@@ -378,7 +378,7 @@ Les fondations des modules monde/rendu/véhicules ont été reprises sur `main` 
 - **Itération 10 — Monde :** terminée. Génération déterministe des huit quartiers, îlots, graphe routier connecté, bâtiments et terrain.
 - **Itération 11 — Rendu :** terminée. Scène React Three Fiber raccordée au monde, terrain coloré, chaussées et marquages, bâtiments et vitrages instanciés, arbres, éclairage, ombres, brouillard, commandes orbitales et rendu à la demande.
 - **Itération 12 — Véhicules :** terminée. Composants ECS dédiés, modèle de conduite arcade à masse et forces (accélération, freinage, marche arrière, traînée et braquage), calcul d'itinéraires Dijkstra sur les routes générées, suivi autonome de waypoints, une voiture jouable au clavier et un véhicule de circulation autonome, caméra de poursuite et HUD de vitesse. Les collisions, suspensions, glissement latéral, dégâts, trafic dense et stationnement dynamique restent hors périmètre.
-- **Itération 13 — Piétons :** terminée. Génération des trottoirs à partir des routes, connexions aux angles d'intersection, errance et fuite limitées au graphe piéton, population déterministe de 42 civils, silhouettes animées en maillages instanciés et affichage dans les statistiques du monde.
+- **Itération 13 — Piétons :** terminée. Génération des trottoirs à partir des routes, connexions aux angles d'intersection, errance et fuite limitées au graphe piéton, population déterministe de 24 civils, silhouettes animées en maillages instanciés et affichage dans les statistiques du monde.
 
 Chaque étape doit respecter la définition de terminé ci-dessous : lint, typage, tests unitaires, tests navigateur, build et documentation.
 
