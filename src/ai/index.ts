@@ -15,3 +15,5 @@ export * from "./events/dynamic-event-components";
 export * from "./events/dynamic-event-types";
 export * from "./events/dynamic-event-system";
 export * from "./events/dynamic-event-catalog";
+export * from "./navigation/city-pedestrian-navigation";
+export * from "./session/create-pedestrian-session";
