@@ -44,6 +44,8 @@ npm run build
 - `src/app` : état d'interface avec Zustand.
 - `src/gameplay`, `src/ai`, `src/missions` : logique de jeu indépendante du rendu.
 - `src/server` : API Fastify et persistance de développement SQLite.
-- `src/world`, `src/rendering`, `src/vehicles` : périmètre monde/rendu/véhicules attribué à Mistral conformément au plan.
+- `src/world` : génération déterministe des huit quartiers, îlots, routes, bâtiments et terrain.
+- `src/rendering` : scène urbaine React Three Fiber, façades instanciées, végétation, éclairage, ombres et caméra orbitale.
+- `src/vehicles` : prochaine étape de réalisation (itération 12), avec consommation du graphe routier.
 
 Les routes de sauvegarde de l'API sont destinées au développement local. Une mise en production devra ajouter une authentification et des règles d'autorisation par joueur avant toute exposition réseau.
