@@ -6,10 +6,12 @@ l'ECS de `src/gameplay`.
 
 ## Navigation
 
-Le monde (Mistral) fournit un graphe piéton à partir des trottoirs, passages
-protégés, places et traversées. Les nœuds ont un identifiant stable, une
-position monde (Y up, -Z forward) et un coût facultatif. Les arêtes sont
-bidirectionnelles par défaut.
+Le graphe piéton peut être alimenté directement par `createCityPedestrianNavigation(city)`.
+Ce générateur dérive deux cheminements de chaque segment routier, décalés de
+la largeur de chaussée et d'un recul de trottoir, puis relie les coins aux
+intersections. Les nœuds ont un identifiant stable, une position monde
+(Y up, -Z forward) et un coût facultatif. Les arêtes sont bidirectionnelles
+par défaut.
 
 ```ts
 const nav = new NavGraph();
@@ -31,13 +33,23 @@ population pondérée et reproductible en injectant une fonction random seedée.
 
 `PedestrianSystem.update(world, dt)` :
 - suit les waypoints à vitesse constante et oriente le personnage ;
-- choisit des destinations de promenade autour de sa position ;
+- choisit ses destinations de promenade parmi les nœuds piétons accessibles, afin de rester sur les trottoirs ;
 - marque des temps d'arrêt entre les trajets ;
 - fait fuir les civils lorsqu'une menace entre dans leur rayon de perception.
 
 Les menaces sont fournies par le moteur de jeu via l'option `threats`, ce qui
 permet de connecter ultérieurement police, véhicules ou événements sans
 coupler les modules.
+
+## Session urbaine intégrée
+
+`createPedestrianSession(city)` construit le graphe des trottoirs, crée une
+population déterministe de 42 civils (commuters, residents, visitors et
+workers) et enregistre `PedestrianSystem` dans une boucle `GameSimulation`.
+La population peut être réglée jusqu'à 250 entités. `src/rendering/PedestrianScene`
+affiche les corps, têtes, bras et jambes au moyen de maillages instanciés ;
+l'animation des membres suit l'état de marche ou de fuite. La simulation reste
+dans `src/ai` et le rendu dans `src/rendering`.
 
 ## Horaires
 
