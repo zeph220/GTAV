@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import type { GeneratedCity } from "../world/world-types";
+import type { PedestrianThreat } from "../ai/systems/pedestrian-system";
 import { Transform } from "../gameplay/ecs/components";
 import type { World } from "../gameplay/ecs/world";
 import { VehicleControls, VehicleDynamics } from "../vehicles/vehicle-components";
@@ -12,9 +13,15 @@ interface VehicleSceneProps {
   city: GeneratedCity;
   active: boolean;
   onSpeedChange?: (speedKph: number) => void;
+  onThreatsChange?: (threats: readonly PedestrianThreat[]) => void;
 }
 
-export function VehicleScene({ city, active, onSpeedChange }: VehicleSceneProps) {
+export function VehicleScene({
+  city,
+  active,
+  onSpeedChange,
+  onThreatsChange,
+}: VehicleSceneProps) {
   const session = useMemo(() => createVehicleSession(city), [city]);
   const { camera, invalidate } = useThree();
   const telemetryElapsed = useRef(0);
@@ -52,6 +59,7 @@ export function VehicleScene({ city, active, onSpeedChange }: VehicleSceneProps)
 
     if (!active) {
       clearControls();
+      onThreatsChange?.([]);
       return;
     }
 
@@ -90,9 +98,10 @@ export function VehicleScene({ city, active, onSpeedChange }: VehicleSceneProps)
         steering: 0,
         handbrake: false,
       });
+      onThreatsChange?.([]);
       invalidate();
     };
-  }, [active, invalidate, session]);
+  }, [active, invalidate, onThreatsChange, session]);
 
   useFrame((_, delta) => {
     if (!active) return;
@@ -129,6 +138,22 @@ export function VehicleScene({ city, active, onSpeedChange }: VehicleSceneProps)
         lastReportedSpeed.current = speedKph;
         onSpeedChange?.(speedKph);
       }
+
+      const playerThreatRadius = Math.abs(dynamics.speedMps) >= 0.5 ? 15 : 5;
+      const threats: PedestrianThreat[] = [{
+        position: { ...transform.position },
+        radius: playerThreatRadius,
+      }];
+      for (const entityId of session.trafficVehicleIds) {
+        const trafficTransform = session.world.getComponent(entityId, Transform);
+        const trafficDynamics = session.world.getComponent(entityId, VehicleDynamics);
+        if (!trafficTransform || !trafficDynamics) continue;
+        threats.push({
+          position: { ...trafficTransform.position },
+          radius: Math.abs(trafficDynamics.speedMps) >= 0.5 ? 12 : 4,
+        });
+      }
+      onThreatsChange?.(threats);
     }
 
     const playerControls = session.world.getComponent(
