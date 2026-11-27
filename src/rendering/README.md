@@ -13,7 +13,7 @@ Le module de rendu transforme les données déterministes de `src/world` en obje
 - un éclairage hémisphérique et directionnel, des ombres et un brouillard atmosphérique ;
 - une caméra orbitale pilotée à la souris : glisser pour tourner, molette pour zoomer et clic droit + glisser pour déplacer le point de vue.
 
-Les géométries statiques sont combinées en buffers et les éléments répétés passent par des `InstancedMesh` pour réduire le nombre d'objets et d'appels de dessin.
+Les géométries statiques sont combinées en buffers et les éléments répétés passent par des `InstancedMesh` pour réduire le nombre d'objets et d'appels de dessin. Le canvas utilise `frameloop="demand"` : la scène statique n'est redessinée que lorsqu'une interaction invalide une nouvelle image, ce qui limite le travail GPU/CPU au repos.
 
 ## Utilisation
 
