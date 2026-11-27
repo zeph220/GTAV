@@ -13,6 +13,8 @@ export type {
   VehicleRouteComponent,
 } from "./vehicle-components";
 export { VehicleDrivingSystem } from "./vehicle-driving-system";
+export { createVehicleSession } from "./create-vehicle-session";
+export type { VehicleSession } from "./create-vehicle-session";
 export {
   findNearestRoadNode,
   findRoadRoute,
