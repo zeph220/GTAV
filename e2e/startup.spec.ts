@@ -19,6 +19,13 @@ test("the NOVA CITY procedural 3D scene loads and can enter pause mode", async (
   await page.mouse.up();
   await expect.poll(() => canvas.evaluate((element) => getComputedStyle(element).cursor))
     .toBe("grab");
+
+  await page.mouse.move(455, 350);
+  await page.mouse.down({ button: "right" });
+  await page.mouse.move(485, 370, { steps: 3 });
+  await page.mouse.up({ button: "right" });
+  await expect.poll(() => canvas.evaluate((element) => getComputedStyle(element).cursor))
+    .toBe("grab");
   await page.mouse.wheel(0, -120);
 
   await page.getByRole("button", { name: /Entrer dans la ville/ }).click();
