@@ -27,6 +27,8 @@ test("the NOVA CITY procedural 3D scene loads and can enter pause mode", async (
   await page.getByRole("button", { name: "Mettre en pause" }).click();
   await expect(page.getByText("En pause")).toBeVisible();
 
-  await page.getByRole("button", { name: "Reprendre" }).click();
+  const pauseToggle = page.locator(".game-panel .primary-button");
+  await expect(pauseToggle).toHaveText("Reprendre");
+  await pauseToggle.click();
   await expect(page.getByText("En visite")).toBeVisible();
 });
