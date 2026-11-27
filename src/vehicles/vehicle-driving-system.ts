@@ -49,7 +49,7 @@ export class VehicleDrivingSystem implements GameSystem {
       }
 
       const dragForce = dynamics.rollingResistanceNewtons +
-        dynamics.aerodynamicDragCoefficient * speed * Math.abs(speed);
+        dynamics.aerodynamicDragCoefficient * speed * speed;
       const dragAcceleration = Math.max(0, dragForce) / dynamics.massKg;
       speed = approachZero(speed, dragAcceleration * delta);
       speed = Math.max(
