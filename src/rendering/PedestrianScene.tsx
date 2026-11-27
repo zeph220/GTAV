@@ -60,7 +60,7 @@ export function PedestrianScene({
     if (count === 0) return;
     invalidate();
     if (!active) return;
-    const intervalId = window.setInterval(invalidate, 50);
+    const intervalId = window.setInterval(invalidate, 100);
     return () => window.clearInterval(intervalId);
   }, [active, count, invalidate]);
 
@@ -68,7 +68,7 @@ export function PedestrianScene({
     if (count === 0) return;
     if (active) {
       tickAccumulator.current += Math.min(delta, 0.1);
-      if (tickAccumulator.current < 0.05 && hasInitializedInstances.current) return;
+      if (tickAccumulator.current < 0.1 && hasInitializedInstances.current) return;
       if (tickAccumulator.current >= 0.05) {
         const simulationDelta = tickAccumulator.current;
         tickAccumulator.current = 0;
@@ -162,22 +162,18 @@ export function PedestrianScene({
       <instancedMesh
         ref={torsoRef}
         args={[TORSO_GEOMETRY, CROWD_MATERIAL, count]}
-        castShadow
       />
       <instancedMesh
         ref={headRef}
         args={[HEAD_GEOMETRY, SKIN_MATERIAL, count]}
-        castShadow
       />
       <instancedMesh
         ref={legRef}
         args={[LEG_GEOMETRY, CROWD_MATERIAL, count * 2]}
-        castShadow
       />
       <instancedMesh
         ref={armRef}
         args={[ARM_GEOMETRY, CROWD_MATERIAL, count * 2]}
-        castShadow
       />
     </>
   );
