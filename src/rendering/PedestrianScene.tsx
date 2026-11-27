@@ -53,23 +53,30 @@ export function PedestrianScene({
   const armDummy = useMemo(() => new THREE.Object3D(), []);
   const color = useMemo(() => new THREE.Color(), []);
   const tickAccumulator = useRef(0);
+  const hasInitializedInstances = useRef(false);
   const count = session.pedestrianIds.length;
 
   useEffect(() => {
-    if (!active || count === 0) return;
+    if (count === 0) return;
     invalidate();
+    if (!active) return;
     const intervalId = window.setInterval(invalidate, 50);
     return () => window.clearInterval(intervalId);
   }, [active, count, invalidate]);
 
   useFrame((_, delta) => {
-    if (!active || count === 0) return;
-    tickAccumulator.current += Math.min(delta, 0.1);
-    if (tickAccumulator.current < 0.05) return;
-    const simulationDelta = tickAccumulator.current;
-    tickAccumulator.current = 0;
-
-    session.simulation.advance(simulationDelta);
+    if (count === 0) return;
+    if (active) {
+      tickAccumulator.current += Math.min(delta, 0.1);
+      if (tickAccumulator.current < 0.05 && hasInitializedInstances.current) return;
+      if (tickAccumulator.current >= 0.05) {
+        const simulationDelta = tickAccumulator.current;
+        tickAccumulator.current = 0;
+        session.simulation.advance(simulationDelta);
+      }
+    } else if (hasInitializedInstances.current) {
+      return;
+    }
     const stepTime = session.simulation.getSnapshot().totalSteps / 60;
 
     for (let index = 0; index < session.pedestrianIds.length; index += 1) {
@@ -145,6 +152,7 @@ export function PedestrianScene({
     headRef.current?.computeBoundingSphere();
     legRef.current?.computeBoundingSphere();
     armRef.current?.computeBoundingSphere();
+    hasInitializedInstances.current = true;
   });
 
   if (count === 0) return null;
