@@ -1,5 +1,6 @@
 export { CityCameraControls } from "./CityCameraControls";
 export { CityScene } from "./CityScene";
+export { VehicleScene } from "./VehicleScene";
 export {
   createAsphaltGeometry,
   createBuildingWindowInstances,
