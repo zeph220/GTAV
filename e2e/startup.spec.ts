@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("the NOVA CITY procedural 3D scene loads and can enter pause mode", async ({ page }) => {
+test("NOVA CITY renders its world, then drives a vehicle and pauses", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.getByRole("heading", { name: "NOVA CITY" })).toBeVisible();
@@ -19,23 +19,22 @@ test("the NOVA CITY procedural 3D scene loads and can enter pause mode", async (
   await page.mouse.up();
   await expect.poll(() => canvas.evaluate((element) => getComputedStyle(element).cursor))
     .toBe("grab");
-
-  await page.mouse.move(455, 350);
-  await page.mouse.down({ button: "right" });
-  await page.mouse.move(485, 370, { steps: 3 });
-  await page.mouse.up({ button: "right" });
-  await expect.poll(() => canvas.evaluate((element) => getComputedStyle(element).cursor))
-    .toBe("grab");
   await page.mouse.wheel(0, -120);
 
-  await page.getByRole("button", { name: /Entrer dans la ville/ }).click();
+  await page.getByRole("button", { name: /Prendre le volant/ }).click();
   await expect(page.getByText("En visite")).toBeVisible();
+  await expect(page.getByLabel("Télémétrie du véhicule")).toBeVisible();
+  await expect(page.getByTestId("vehicle-speed")).toHaveText("0");
+
+  await page.keyboard.down("w");
+  await expect.poll(async () => Number(await page.getByTestId("vehicle-speed").textContent()), {
+    timeout: 8000,
+  }).toBeGreaterThan(0);
+  await page.keyboard.up("w");
 
   await page.getByRole("button", { name: "Mettre en pause" }).click();
   await expect(page.getByText("En pause")).toBeVisible();
 
-  const pauseToggle = page.locator(".game-panel .primary-button");
-  await expect(pauseToggle).toHaveText("Reprendre");
-  await pauseToggle.click();
+  await page.getByRole("button", { name: "Reprendre" }).click();
   await expect(page.getByText("En visite")).toBeVisible();
 });
