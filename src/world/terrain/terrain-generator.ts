@@ -116,7 +116,7 @@ function validateBounds(bounds: WorldBounds): void {
 }
 
 function validateSegments(value: number, name: string): void {
-  if (!Number.isInteger(value) || value < 1 || value > 256) {
-    throw new Error(`${name} must be an integer between 1 and 256`);
+  if (!Number.isInteger(value) || value < 1 || value > 512) {
+    throw new Error(`${name} must be an integer between 1 and 512`);
   }
 }
