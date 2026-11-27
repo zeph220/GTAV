@@ -37,9 +37,12 @@ population pondérée et reproductible en injectant une fonction random seedée.
 - marque des temps d'arrêt entre les trajets ;
 - fait fuir les civils lorsqu'une menace entre dans leur rayon de perception.
 
-Les menaces sont fournies par le moteur de jeu via l'option `threats`, ce qui
-permet de connecter ultérieurement police, véhicules ou événements sans
-coupler les modules.
+Les menaces sont fournies par le moteur de jeu via l'option `threats`. La
+scène de conduite publie les positions du véhicule joueur et du trafic autonome
+environ toutes les 120 ms ; les civils proches choisissent alors un itinéraire
+de fuite sur le graphe des trottoirs. La source est vidée lorsque la conduite
+est mise en pause ou arrêtée. Ce raccordement conserve l'indépendance des
+simulations ECS : l'IA ne dépend ni de Three.js ni du module véhicules.
 
 ## Session urbaine intégrée
 
