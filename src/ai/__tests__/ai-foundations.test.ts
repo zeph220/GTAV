@@ -34,6 +34,14 @@ describe("NOVA CITY pedestrian AI", () => {
     expect(path?.[path.length - 1]).toEqual({ x: 9, y: 0, z: 2 });
   });
 
+  it("returns defensive, distance-sorted navigation node queries", () => {
+    const graph = makeLineGraph();
+    const nodes = graph.nodesWithin({ x: 4, y: 0, z: 0 }, 7);
+    expect(nodes.map((node) => node.id)).toEqual(["b", "a", "c"]);
+    nodes[0]!.position.x = 999;
+    expect(graph.getNode("b")?.position.x).toBe(5);
+  });
+
   it("creates a civilian with archetype traits and ECS components", () => {
     const world = new World();
     const id = createCivilian(world, { x: 1, y: 0, z: 2 }, { archetype: "commuter", random: () => 0.5 });
@@ -53,6 +61,24 @@ describe("NOVA CITY pedestrian AI", () => {
     expect(world.getComponent(id, Transform)?.position.x).toBeCloseTo(0.2);
   });
 
+  it("chooses wander destinations from the sidewalk graph", () => {
+    const graph = makeLineGraph();
+    const world = new World();
+    const id = createCivilian(world, { x: 0, y: 0, z: 0 }, { random: () => 0 });
+    const civilian = world.getComponent(id, Civilian)!;
+    civilian.waitRemaining = 0;
+    civilian.decisionTimer = 0;
+
+    new PedestrianSystem(graph, { random: () => 0 }).update(world, 0.1);
+
+    expect(civilian.state).toBe("walking");
+    expect(graph.getNodes().some((node) =>
+      node.position.x === civilian.destination?.x &&
+      node.position.y === civilian.destination?.y &&
+      node.position.z === civilian.destination?.z
+    )).toBe(true);
+  });
+
   it("makes civilians flee from a nearby threat", () => {
     const graph = makeLineGraph();
     const world = new World();
@@ -62,7 +88,13 @@ describe("NOVA CITY pedestrian AI", () => {
       threats: () => [{ position: { x: 1, y: 0, z: 0 }, radius: 8 }],
     });
     system.update(world, 1 / 60);
-    expect(world.getComponent(id, Civilian)?.state).toBe("fleeing");
+    const civilian = world.getComponent(id, Civilian)!;
+    expect(civilian.state).toBe("fleeing");
+    expect(graph.getNodes().some((node) =>
+      node.position.x === civilian.destination?.x &&
+      node.position.y === civilian.destination?.y &&
+      node.position.z === civilian.destination?.z
+    )).toBe(true);
   });
 
   it("assigns commuter routes only once per schedule phase", () => {
