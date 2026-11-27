@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Transform } from "../../gameplay/ecs/components";
 import { Civilian } from "../civilian/civilian-components";
+import type { PedestrianThreat } from "../systems/pedestrian-system";
 import { generateCity } from "../../world";
 import { createCityPedestrianNavigation } from "../navigation/city-pedestrian-navigation";
 import { createPedestrianSession } from "../session/create-pedestrian-session";
@@ -88,6 +89,43 @@ describe("NOVA CITY pedestrian integration", () => {
       ) > 0.1;
     }).length;
     expect(movedCount).toBeGreaterThan(0);
+  });
+
+  it("reacts to live player and traffic vehicle threats without rebuilding the session", () => {
+    const city = generateCity({
+      seed: "pedestrian-vehicle-awareness-test",
+      blocksPerDistrict: 2,
+      terrainSegmentsPerDistrict: 2,
+    });
+    let currentThreats: readonly PedestrianThreat[] = [];
+    const session = createPedestrianSession(city, {
+      population: 8,
+      threats: () => currentThreats,
+    });
+    const pedestrianId = session.pedestrianIds[0]!;
+    const transform = session.world.getComponent(pedestrianId, Transform)!;
+    const civilian = session.world.getComponent(pedestrianId, Civilian)!;
+    expect(civilian.state).not.toBe("fleeing");
+
+    currentThreats = [{
+      position: {
+        x: transform.position.x - 2,
+        y: transform.position.y,
+        z: transform.position.z,
+      },
+      radius: 18,
+    }];
+    session.simulation.advance(1 / 60);
+
+    expect(civilian.state).toBe("fleeing");
+    expect(civilian.destination).not.toBeNull();
+    expect(civilian.path.length).toBeGreaterThan(0);
+
+    const fleeingDestination = { ...civilian.destination! };
+    currentThreats = [];
+    session.simulation.advance(1 / 60);
+    expect(civilian.state).toBe("fleeing");
+    expect(civilian.destination).toEqual(fleeingDestination);
   });
 
   it("rejects unsafe population sizes and invalid sidewalk geometry", () => {
