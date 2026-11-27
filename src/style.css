@@ -64,6 +64,29 @@ h1 {
   align-items: flex-end;
   flex-direction: column;
   gap: 11px;
+  pointer-events: auto;
+}
+.pause-button {
+  padding: 9px 12px;
+  border: 1px solid #eaf2f1aa;
+  border-radius: 2px;
+  color: #eaf4f2;
+  background: #192c36cc;
+  font-family: "DM Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.pause-button:hover {
+  border-color: #d9f1ed;
+  background: #284550e8;
+}
+.pause-button:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 3px;
 }
 .phase-pill {
   padding: 9px 12px;
