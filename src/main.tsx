@@ -3,6 +3,7 @@ import { StrictMode, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { useGameStore } from "./app/game-store";
 import { generateCity } from "./world";
+import { DEFAULT_CITY_PEDESTRIAN_POPULATION } from "./ai";
 import { CityScene } from "./rendering/CityScene";
 import { VehicleScene } from "./rendering/VehicleScene";
 import { PedestrianScene } from "./rendering/PedestrianScene";
@@ -60,6 +61,7 @@ function App() {
             <span>{city.districts.length} QUARTIERS</span>
             <span>{city.roadNetwork.segments.length} ROUTES</span>
             <span>{city.buildings.length} BÂTIMENTS</span>
+            <span data-testid="pedestrian-population">{DEFAULT_CITY_PEDESTRIAN_POPULATION} PIÉTONS</span>
           </div>
         </div>
       </header>
